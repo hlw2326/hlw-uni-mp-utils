@@ -260,7 +260,8 @@ function parseScene(rawScene) {
 }
 function getLaunchQuery(enterOptions) {
   const opts = enterOptions || uni.getEnterOptionsSync();
-  const query = { ...opts?.query || {} };
+  const rawQuery = opts && typeof opts === "object" && "query" in opts && opts.query ? opts.query : {};
+  const query = { ...rawQuery };
   if (query.scene) {
     const parsed = parseScene(query.scene);
     Object.assign(query, parsed);
