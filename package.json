@@ -1,0 +1,30 @@
+{
+  "name": "@hlw-uni-mp/utils",
+  "version": "1.0.9",
+  "description": "Universal Uni-App stateless utility library",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "devDependencies": {
+    "@dcloudio/types": "^3.4.30",
+    "tsup": "^8.5.1",
+    "typescript": "^5.9.3"
+  }
+}
