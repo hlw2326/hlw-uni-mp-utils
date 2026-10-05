@@ -159,7 +159,7 @@ declare function parseScene(rawScene: string): Record<string, string>;
  * 获取当前小程序启动参数并自动合并解析后的 scene
  * @param enterOptions 小程序 onLaunch / onShow 参数（未传入时自动读取 getEnterOptionsSync）
  */
-declare function getLaunchQuery(enterOptions?: Record<string, any>): Record<string, string>;
+declare function getLaunchQuery(enterOptions?: App.LaunchShowOption | Record<string, any> | null): Record<string, string>;
 
 /**
  * 跨端安全时间戳转换（兼容 iOS/Safari 不支持连字符 "YYYY-MM-DD" 的系统限制）

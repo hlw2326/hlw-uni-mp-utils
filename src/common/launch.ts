@@ -53,9 +53,10 @@ export function parseScene(rawScene: string): Record<string, string> {
  * 获取当前小程序启动参数并自动合并解析后的 scene
  * @param enterOptions 小程序 onLaunch / onShow 参数（未传入时自动读取 getEnterOptionsSync）
  */
-export function getLaunchQuery(enterOptions?: Record<string, any>): Record<string, string> {
+export function getLaunchQuery(enterOptions?: App.LaunchShowOption | Record<string, any> | null): Record<string, string> {
     const opts = enterOptions || uni.getEnterOptionsSync();
-    const query = { ...(opts?.query || {}) };
+    const rawQuery = (opts && typeof opts === "object" && "query" in opts && opts.query) ? (opts.query as Record<string, string>) : {};
+    const query: Record<string, string> = { ...rawQuery };
     if (query.scene) {
         const parsed = parseScene(query.scene);
         Object.assign(query, parsed);
