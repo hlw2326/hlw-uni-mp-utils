@@ -341,7 +341,7 @@ function parseScene(rawScene) {
   return result;
 }
 function getLaunchQuery(enterOptions) {
-  const opts = enterOptions || (typeof uni.getEnterOptionsSync === "function" ? uni.getEnterOptionsSync() : {});
+  const opts = enterOptions || uni.getEnterOptionsSync();
   const query = { ...opts?.query || {} };
   if (query.scene) {
     const parsed = parseScene(query.scene);

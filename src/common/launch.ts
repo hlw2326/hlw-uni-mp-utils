@@ -54,7 +54,7 @@ export function parseScene(rawScene: string): Record<string, string> {
  * @param enterOptions 小程序 onLaunch / onShow 参数（未传入时自动读取 getEnterOptionsSync）
  */
 export function getLaunchQuery(enterOptions?: Record<string, any>): Record<string, string> {
-    const opts = enterOptions || (typeof uni.getEnterOptionsSync === "function" ? uni.getEnterOptionsSync() : {});
+    const opts = enterOptions || uni.getEnterOptionsSync();
     const query = { ...(opts?.query || {}) };
     if (query.scene) {
         const parsed = parseScene(query.scene);
