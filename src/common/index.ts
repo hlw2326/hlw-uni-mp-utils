@@ -7,3 +7,4 @@ export * from "./convert";
 export * from "./clipboard";
 export * from "./media";
 export * from "./update";
+export * from "./launch";

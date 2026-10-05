@@ -1,15 +1,26 @@
 /**
  * 复制文本内容至系统剪贴板
  * @param text 待复制文本
+ * @param successMsg 复制成功时的提示文案，留空不提示
  * @returns 是否复制成功
  */
-export function copy(text: string): Promise<boolean> {
+export function copy(text: string, successMsg?: string): Promise<boolean> {
     return new Promise((resolve) => {
         uni.setClipboardData({
             data: text,
             showToast: false,
-            success: () => resolve(true),
-            fail: () => resolve(false),
+            success: () => {
+                if (successMsg) {
+                    uni.showToast({ title: successMsg, icon: "none" });
+                }
+                resolve(true);
+            },
+            fail: () => {
+                if (successMsg) {
+                    uni.showToast({ title: "复制失败", icon: "none" });
+                }
+                resolve(false);
+            },
         });
     });
 }
@@ -21,8 +32,14 @@ export function copy(text: string): Promise<boolean> {
 export function paste(): Promise<string> {
     return new Promise((resolve) => {
         uni.getClipboardData({
-            success: (res) => resolve(res.data),
+            success: (res) => resolve(res.data || ""),
             fail: () => resolve(""),
         });
     });
 }
+
+/** 写入剪贴板别名 */
+export const setClipboardText = copy;
+
+/** 读取剪贴板别名 */
+export const getClipboardText = paste;
