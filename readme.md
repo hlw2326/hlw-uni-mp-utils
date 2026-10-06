@@ -22,6 +22,7 @@ Universal Uni-App 无状态通用工具函数库。100% 纯粹无状态与零 UI
 | **`date`** | `formatDate`, `timeAgo`, `formatDuration` | 日期格式化与相对时间计算 |
 | **`canvas`** | `drawRoundRect`, `drawTextWrap`, `drawCircleImage` | 海报与 Canvas 2D 高频绘制工具 |
 | **`ad`** | `initPopupAd`, `playRewardAd`, `createBannerAd` | 全局单例激励视频广告与插屏广告调度器 |
+| **`device`** | `getDevice`, `DeviceInfo` | 跨端设备硬件参数、系统版本与网络状态统一采集与缓存 |
 
 ---
 

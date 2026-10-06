@@ -8,3 +8,4 @@ export * from "./canvas";
 export * from "./navigator";
 export * from "./ad";
 export * from "./msg";
+export * from "./device";

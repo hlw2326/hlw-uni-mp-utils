@@ -38,6 +38,7 @@ __export(index_exports, {
   formatNum: () => formatNum,
   formatNumber: () => formatNumber,
   getClipboardText: () => getClipboardText,
+  getDevice: () => getDevice,
   getLaunchQuery: () => getLaunchQuery,
   getNumber: () => getNumber,
   getTodayStr: () => getTodayStr,
@@ -895,6 +896,64 @@ var useMsg = () => msg;
 var hlw = {
   $msg: msg
 };
+
+// src/device/index.ts
+var deviceCache = null;
+var currentNetworkType = "";
+uni.getNetworkType({
+  success(res) {
+    currentNetworkType = res.networkType || "";
+    if (deviceCache) {
+      deviceCache.networkType = currentNetworkType;
+    }
+  }
+});
+uni.onNetworkStatusChange((res) => {
+  currentNetworkType = res.networkType || "";
+  if (deviceCache) {
+    deviceCache.networkType = currentNetworkType;
+  }
+});
+function getDevice() {
+  if (deviceCache) return deviceCache;
+  const deviceRaw = uni.getDeviceInfo();
+  const windowRaw = uni.getWindowInfo();
+  const appRaw = uni.getAppBaseInfo();
+  const accountRaw = uni.getAccountInfoSync();
+  const system = deviceRaw.system || "";
+  deviceCache = {
+    appid: accountRaw.miniProgram?.appId || "",
+    appName: appRaw.appName || "",
+    version: appRaw.appVersion || "",
+    versionCode: appRaw.appVersionCode || "",
+    channel: appRaw.appChannel || "",
+    deviceId: deviceRaw.deviceId || "",
+    deviceType: deviceRaw.deviceType || "",
+    deviceOrientation: deviceRaw.deviceOrientation || windowRaw.deviceOrientation || "portrait",
+    brand: deviceRaw.brand || "",
+    model: deviceRaw.model || "",
+    system,
+    os: system.split(" ")[0] || "",
+    pixelRatio: windowRaw.pixelRatio || 0,
+    screenWidth: windowRaw.screenWidth || 0,
+    screenHeight: windowRaw.screenHeight || 0,
+    windowWidth: windowRaw.windowWidth || 0,
+    windowHeight: windowRaw.windowHeight || 0,
+    statusBarHeight: windowRaw.statusBarHeight || 0,
+    sdkVersion: appRaw.SDKVersion || "",
+    hostName: appRaw.hostName || "",
+    hostVersion: appRaw.hostVersion || "",
+    hostLanguage: appRaw.hostLanguage || "",
+    hostTheme: appRaw.hostTheme || "",
+    platform: deviceRaw.platform || "",
+    language: appRaw.appLanguage || appRaw.language || "",
+    networkType: currentNetworkType,
+    benchmarkLevel: deviceRaw.benchmarkLevel || 0,
+    theme: appRaw.theme || "light",
+    fontSizeSetting: appRaw.fontSizeSetting || 16
+  };
+  return deviceCache;
+}
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
   auth,
@@ -915,6 +974,7 @@ var hlw = {
   formatNum,
   formatNumber,
   getClipboardText,
+  getDevice,
   getLaunchQuery,
   getNumber,
   getTodayStr,

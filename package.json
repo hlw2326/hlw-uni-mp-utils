@@ -1,6 +1,6 @@
 {
   "name": "@hlw-uni-mp/utils",
-  "version": "1.0.14",
+  "version": "1.0.15",
   "description": "Universal Uni-App stateless utility library",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",

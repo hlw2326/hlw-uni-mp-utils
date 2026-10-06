@@ -381,4 +381,59 @@ declare const hlw: {
 };
 type HlwInstance = typeof hlw;
 
-export { type AdRes, type DownloadOpt, type DownloadRes, type HlwInstance, type HlwMsg, type NavigateOptions, type NavigateType, type RewardOptions, type ToastCallback, type ToastRes, auth, buildUrl, checkAppUpdate, confirmRewardAd, copy, destroyRewardAd, download, drawCircleAvatar, drawImage, drawRoundRect, drawRoundRectImage, drawTextWithSpacing, error, formatConvertNumber, formatDate, formatNum, formatNumber, getClipboardText, getLaunchQuery, getNumber, getTodayStr, hideLoading, hlw, initPopupAd, isPageMatch, isTimeInRange, measureTextWithSpacing, modal, msg, navigate, navigateBack, navigateTo, navigateToMiniProgram, parseDate, parseScene, paste, playRewardAd, reLaunch, redirectTo, safeDecode, saveImage, saveImageUrl, saveVideoFile, saveVideoUrl, setClipboardText, setPopupAd, showLoading, showPopupAd, showRewardAd, success, switchTab, toBoolean, toNumber, toQuery, toast, useMsg, withQuery };
+/**
+ * 设备信息定义
+ */
+interface DeviceInfo {
+    appid: string;
+    appName: string;
+    version: string;
+    versionCode: string;
+    channel: string;
+    deviceId: string;
+    deviceType: string;
+    deviceOrientation: 'portrait' | 'landscape';
+    brand: string;
+    model: string;
+    system: string;
+    os: string;
+    pixelRatio: number;
+    screenWidth: number;
+    screenHeight: number;
+    windowWidth: number;
+    windowHeight: number;
+    statusBarHeight: number;
+    sdkVersion: string;
+    hostName: string;
+    hostVersion: string;
+    hostLanguage: string;
+    hostTheme: string;
+    platform: string;
+    language: string;
+    networkType: string;
+    benchmarkLevel: number;
+    theme: string;
+    fontSizeSetting: number;
+}
+declare global {
+    namespace UniNamespace {
+        interface GetDeviceInfoResult {
+            benchmarkLevel?: number;
+        }
+        interface GetAppBaseInfoResult {
+            appChannel?: string;
+            appLanguage?: string;
+            fontSizeSetting?: number;
+        }
+        interface GetWindowInfoResult {
+            deviceOrientation?: 'portrait' | 'landscape';
+        }
+    }
+}
+/**
+ * 采集设备信息
+ * @returns 设备参数集
+ */
+declare function getDevice(): DeviceInfo;
+
+export { type AdRes, type DeviceInfo, type DownloadOpt, type DownloadRes, type HlwInstance, type HlwMsg, type NavigateOptions, type NavigateType, type RewardOptions, type ToastCallback, type ToastRes, auth, buildUrl, checkAppUpdate, confirmRewardAd, copy, destroyRewardAd, download, drawCircleAvatar, drawImage, drawRoundRect, drawRoundRectImage, drawTextWithSpacing, error, formatConvertNumber, formatDate, formatNum, formatNumber, getClipboardText, getDevice, getLaunchQuery, getNumber, getTodayStr, hideLoading, hlw, initPopupAd, isPageMatch, isTimeInRange, measureTextWithSpacing, modal, msg, navigate, navigateBack, navigateTo, navigateToMiniProgram, parseDate, parseScene, paste, playRewardAd, reLaunch, redirectTo, safeDecode, saveImage, saveImageUrl, saveVideoFile, saveVideoUrl, setClipboardText, setPopupAd, showLoading, showPopupAd, showRewardAd, success, switchTab, toBoolean, toNumber, toQuery, toast, useMsg, withQuery };
