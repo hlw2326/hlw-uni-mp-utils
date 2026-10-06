@@ -1,6 +1,6 @@
 {
   "name": "@hlw-uni-mp/utils",
-  "version": "1.0.12",
+  "version": "1.0.14",
   "description": "Universal Uni-App stateless utility library",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -24,7 +24,7 @@
     "access": "public"
   },
   "devDependencies": {
-    "@dcloudio/types": "^3.4.30",
+    "@dcloudio/types": "^3.4.32",
     "tsup": "^8.5.1",
     "typescript": "^5.9.3"
   }
