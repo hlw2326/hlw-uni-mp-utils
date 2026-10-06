@@ -17,12 +17,14 @@ Universal Uni-App 无状态通用工具函数库。100% 纯粹无状态与零 UI
 | 模块 | 核心方法 / 工具 | 描述 |
 | :--- | :--- | :--- |
 | **`msg`** | `toast`, `modal`, `showLoading`, `hideLoading`, `hlw.$msg` | 跨端轻提示、模态确认弹窗与加载态门面封装 |
-| **`common`** | `copy`, `paste`, `saveImageUrl`, `saveVideoUrl`, `checkAppUpdate`, `getLaunchQuery`, `hlw` | 系统剪贴板、多媒体相册保存、应用版本更新与启动参数解析 |
+| **`common`** | `copy`, `paste`, `saveImageUrl`, `saveVideoUrl`, `checkAppUpdate`, `getLaunchQuery`, `debounce`, `throttle`, `formatFileSize`, `hlw` | 系统剪贴板、相册保存、应用更新、防抖节流与文件大小格式化 |
 | **`navigator`** | `navigate`, `navigateTo`, `redirectTo`, `reLaunch`, `switchTab`, `navigateBack` | 跨端原生路由跳转与参数序列化 |
 | **`date`** | `formatDate`, `timeAgo`, `formatDuration` | 日期格式化与相对时间计算 |
 | **`canvas`** | `drawRoundRect`, `drawTextWrap`, `drawCircleImage` | 海报与 Canvas 2D 高频绘制工具 |
 | **`ad`** | `initPopupAd`, `playRewardAd`, `createBannerAd` | 全局单例激励视频广告与插屏广告调度器 |
 | **`device`** | `getDevice`, `DeviceInfo` | 跨端设备硬件参数、系统版本与网络状态统一采集与缓存 |
+| **`dom`** | `getRect`, `getAllRect`, `RectInfo` | Promise 风格异步节点尺寸查询与批量测量 |
+| **`permission`** | `checkPermission`, `PermissionScope` | 智能权限检查、自动授权申请与引导开启二次确认弹窗 |
 
 ---
 

@@ -63,3 +63,18 @@ export function formatNum(val: number | string): string {
 
 /** 格式化数值简短别名 */
 export const formatNumber = formatConvertNumber;
+
+/**
+ * 格式化文件字节大小展示（如 1024 转换为 1 KB，1048576 转换为 1 MB）
+ * @param bytes 字节数
+ * @param decimals 保留小数位数，默认 2
+ */
+export function formatFileSize(bytes: number, decimals = 2): string {
+    if (!bytes || bytes <= 0) return '0 B';
+    const k = 1024;
+    const dm = decimals < 0 ? 0 : decimals;
+    const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    const idx = Math.min(i, sizes.length - 1);
+    return `${parseFloat((bytes / Math.pow(k, idx)).toFixed(dm))} ${sizes[idx]}`;
+}

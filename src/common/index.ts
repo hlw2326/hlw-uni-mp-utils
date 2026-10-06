@@ -8,3 +8,4 @@ export * from "./clipboard";
 export * from "./media";
 export * from "./update";
 export * from "./launch";
+export * from "./func";

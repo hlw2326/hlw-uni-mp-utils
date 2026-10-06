@@ -9,3 +9,5 @@ export * from "./navigator";
 export * from "./ad";
 export * from "./msg";
 export * from "./device";
+export * from "./dom";
+export * from "./permission";

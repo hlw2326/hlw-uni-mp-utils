@@ -56,6 +56,12 @@ declare function formatConvertNumber(value: number | string): string;
 declare function formatNum(val: number | string): string;
 /** 格式化数值简短别名 */
 declare const formatNumber: typeof formatConvertNumber;
+/**
+ * 格式化文件字节大小展示（如 1024 转换为 1 KB，1048576 转换为 1 MB）
+ * @param bytes 字节数
+ * @param decimals 保留小数位数，默认 2
+ */
+declare function formatFileSize(bytes: number, decimals?: number): string;
 
 /**
  * 复制文本内容至系统剪贴板
@@ -160,6 +166,19 @@ declare function parseScene(rawScene: string): Record<string, string>;
  * @param enterOptions 小程序 onLaunch / onShow 参数（未传入时自动读取 getEnterOptionsSync）
  */
 declare function getLaunchQuery(enterOptions?: App.LaunchShowOption | Record<string, any> | null): Record<string, string>;
+
+/**
+ * 防抖函数：在延迟时间内多次调用，仅执行最后一次
+ * @param fn 目标函数
+ * @param delay 延迟毫秒数，默认 300
+ */
+declare function debounce<T extends (...args: unknown[]) => unknown>(fn: T, delay?: number): (...args: Parameters<T>) => void;
+/**
+ * 节流函数：指定时间间隔内只允许执行一次
+ * @param fn 目标函数
+ * @param interval 间隔毫秒数，默认 300
+ */
+declare function throttle<T extends (...args: unknown[]) => unknown>(fn: T, interval?: number): (...args: Parameters<T>) => void;
 
 /**
  * 跨端安全时间戳转换（兼容 iOS/Safari 不支持连字符 "YYYY-MM-DD" 的系统限制）
@@ -436,4 +455,57 @@ declare global {
  */
 declare function getDevice(): DeviceInfo;
 
-export { type AdRes, type DeviceInfo, type DownloadOpt, type DownloadRes, type HlwInstance, type HlwMsg, type NavigateOptions, type NavigateType, type RewardOptions, type ToastCallback, type ToastRes, auth, buildUrl, checkAppUpdate, confirmRewardAd, copy, destroyRewardAd, download, drawCircleAvatar, drawImage, drawRoundRect, drawRoundRectImage, drawTextWithSpacing, error, formatConvertNumber, formatDate, formatNum, formatNumber, getClipboardText, getDevice, getLaunchQuery, getNumber, getTodayStr, hideLoading, hlw, initPopupAd, isPageMatch, isTimeInRange, measureTextWithSpacing, modal, msg, navigate, navigateBack, navigateTo, navigateToMiniProgram, parseDate, parseScene, paste, playRewardAd, reLaunch, redirectTo, safeDecode, saveImage, saveImageUrl, saveVideoFile, saveVideoUrl, setClipboardText, setPopupAd, showLoading, showPopupAd, showRewardAd, success, switchTab, toBoolean, toNumber, toQuery, toast, useMsg, withQuery };
+/**
+ * 节点边界尺寸信息
+ */
+interface RectInfo {
+    id: string;
+    dataset: Record<string, unknown>;
+    left: number;
+    right: number;
+    top: number;
+    bottom: number;
+    width: number;
+    height: number;
+}
+/**
+ * 异步查询单个节点尺寸信息
+ * @param selector 选择器，例如 '#header' 或 '.content'
+ * @param context 自定义组件实例上下文 (可选)
+ * @returns 节点尺寸信息 Promise
+ */
+declare function getRect(selector: string, context?: unknown): Promise<RectInfo | null>;
+/**
+ * 异步查询全部匹配节点尺寸信息
+ * @param selector 选择器，例如 '.item'
+ * @param context 自定义组件实例上下文 (可选)
+ * @returns 节点尺寸信息数组 Promise
+ */
+declare function getAllRect(selector: string, context?: unknown): Promise<RectInfo[]>;
+
+/**
+ * 权限 Scope 类型定义
+ */
+type PermissionScope = 'scope.userLocation' | 'scope.userLocationBackground' | 'scope.record' | 'scope.camera' | 'scope.bluetooth' | 'scope.writePhotosAlbum' | 'scope.addPhoneContact' | 'scope.addPhoneCalendar' | 'scope.werun' | 'scope.address' | 'scope.invoiceTitle' | 'scope.invoice' | 'scope.userInfo';
+/**
+ * 权限引导弹窗配置
+ */
+interface PermissionOptions {
+    /** 弹窗标题，默认“授权提示” */
+    title?: string;
+    /** 弹窗说明内容，例如“需要访问相册以保存海报” */
+    content?: string;
+    /** 确认按钮文字，默认“去设置” */
+    confirmText?: string;
+    /** 取消按钮文字，默认“取消” */
+    cancelText?: string;
+}
+/**
+ * 检查并申请权限（若已拒绝则弹窗引导去设置页开启）
+ * @param scope 申请的权限 scope 标识
+ * @param options 引导弹窗提示配置
+ * @returns 是否获得授权
+ */
+declare function checkPermission(scope: PermissionScope, options?: PermissionOptions): Promise<boolean>;
+
+export { type AdRes, type DeviceInfo, type DownloadOpt, type DownloadRes, type HlwInstance, type HlwMsg, type NavigateOptions, type NavigateType, type PermissionOptions, type PermissionScope, type RectInfo, type RewardOptions, type ToastCallback, type ToastRes, auth, buildUrl, checkAppUpdate, checkPermission, confirmRewardAd, copy, debounce, destroyRewardAd, download, drawCircleAvatar, drawImage, drawRoundRect, drawRoundRectImage, drawTextWithSpacing, error, formatConvertNumber, formatDate, formatFileSize, formatNum, formatNumber, getAllRect, getClipboardText, getDevice, getLaunchQuery, getNumber, getRect, getTodayStr, hideLoading, hlw, initPopupAd, isPageMatch, isTimeInRange, measureTextWithSpacing, modal, msg, navigate, navigateBack, navigateTo, navigateToMiniProgram, parseDate, parseScene, paste, playRewardAd, reLaunch, redirectTo, safeDecode, saveImage, saveImageUrl, saveVideoFile, saveVideoUrl, setClipboardText, setPopupAd, showLoading, showPopupAd, showRewardAd, success, switchTab, throttle, toBoolean, toNumber, toQuery, toast, useMsg, withQuery };

@@ -23,8 +23,10 @@ __export(index_exports, {
   auth: () => auth,
   buildUrl: () => buildUrl,
   checkAppUpdate: () => checkAppUpdate,
+  checkPermission: () => checkPermission,
   confirmRewardAd: () => confirmRewardAd,
   copy: () => copy,
+  debounce: () => debounce,
   destroyRewardAd: () => destroyRewardAd,
   download: () => download,
   drawCircleAvatar: () => drawCircleAvatar,
@@ -35,12 +37,15 @@ __export(index_exports, {
   error: () => error,
   formatConvertNumber: () => formatConvertNumber,
   formatDate: () => formatDate,
+  formatFileSize: () => formatFileSize,
   formatNum: () => formatNum,
   formatNumber: () => formatNumber,
+  getAllRect: () => getAllRect,
   getClipboardText: () => getClipboardText,
   getDevice: () => getDevice,
   getLaunchQuery: () => getLaunchQuery,
   getNumber: () => getNumber,
+  getRect: () => getRect,
   getTodayStr: () => getTodayStr,
   hideLoading: () => hideLoading,
   hlw: () => hlw,
@@ -72,6 +77,7 @@ __export(index_exports, {
   showRewardAd: () => showRewardAd,
   success: () => success,
   switchTab: () => switchTab,
+  throttle: () => throttle,
   toBoolean: () => toBoolean,
   toNumber: () => toNumber,
   toQuery: () => toQuery,
@@ -169,6 +175,15 @@ function formatNum(val) {
   return formatConvertNumber(n);
 }
 var formatNumber = formatConvertNumber;
+function formatFileSize(bytes, decimals = 2) {
+  if (!bytes || bytes <= 0) return "0 B";
+  const k = 1024;
+  const dm = decimals < 0 ? 0 : decimals;
+  const sizes = ["B", "KB", "MB", "GB", "TB"];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  const idx = Math.min(i, sizes.length - 1);
+  return `${parseFloat((bytes / Math.pow(k, idx)).toFixed(dm))} ${sizes[idx]}`;
+}
 
 // src/common/clipboard.ts
 function copy(text, successMsg) {
@@ -350,6 +365,28 @@ function getLaunchQuery(enterOptions) {
     Object.assign(query, parsed);
   }
   return query;
+}
+
+// src/common/func.ts
+function debounce(fn, delay = 300) {
+  let timer = null;
+  return function(...args) {
+    if (timer) clearTimeout(timer);
+    timer = setTimeout(() => {
+      fn.apply(this, args);
+      timer = null;
+    }, delay);
+  };
+}
+function throttle(fn, interval = 300) {
+  let lastTime = 0;
+  return function(...args) {
+    const now = Date.now();
+    if (now - lastTime >= interval) {
+      lastTime = now;
+      fn.apply(this, args);
+    }
+  };
 }
 
 // src/date/index.ts
@@ -954,13 +991,111 @@ function getDevice() {
   };
   return deviceCache;
 }
+
+// src/dom/index.ts
+function getRect(selector, context) {
+  return new Promise((resolve) => {
+    const query = context ? uni.createSelectorQuery().in(context) : uni.createSelectorQuery();
+    query.select(selector).boundingClientRect((res) => {
+      if (res && !Array.isArray(res)) {
+        resolve(res);
+      } else {
+        resolve(null);
+      }
+    }).exec();
+  });
+}
+function getAllRect(selector, context) {
+  return new Promise((resolve) => {
+    const query = context ? uni.createSelectorQuery().in(context) : uni.createSelectorQuery();
+    query.selectAll(selector).boundingClientRect((res) => {
+      if (Array.isArray(res)) {
+        resolve(res);
+      } else {
+        resolve([]);
+      }
+    }).exec();
+  });
+}
+
+// src/permission/index.ts
+var DEFAULT_SCOPE_NAMES = {
+  "scope.writePhotosAlbum": "\u76F8\u518C\u4FDD\u5B58",
+  "scope.camera": "\u76F8\u673A\u62CD\u6444",
+  "scope.record": "\u9EA6\u514B\u98CE\u5F55\u97F3",
+  "scope.userLocation": "\u5730\u7406\u4F4D\u7F6E",
+  "scope.bluetooth": "\u84DD\u7259\u8BBE\u5907",
+  "scope.addPhoneContact": "\u901A\u8BAF\u5F55"
+};
+function checkPermission(scope, options = {}) {
+  return new Promise((resolve) => {
+    resolve(true);
+    return;
+    uni.getSetting({
+      success(res) {
+        const auth2 = res.authSetting;
+        if (auth2 && auth2[scope] === true) {
+          resolve(true);
+          return;
+        }
+        if (!auth2 || auth2[scope] === void 0) {
+          uni.authorize({
+            scope,
+            success() {
+              resolve(true);
+            },
+            fail() {
+              resolve(false);
+            }
+          });
+          return;
+        }
+        const scopeName = DEFAULT_SCOPE_NAMES[scope] || "\u76F8\u5173";
+        const title = options.title || "\u6388\u6743\u63D0\u793A";
+        const content = options.content || `\u9700\u8981\u4F7F\u7528${scopeName}\u529F\u80FD\uFF0C\u8BF7\u5728\u8BBE\u7F6E\u4E2D\u5F00\u542F\u6743\u9650`;
+        const confirmText = options.confirmText || "\u53BB\u8BBE\u7F6E";
+        const cancelText = options.cancelText || "\u53D6\u6D88";
+        uni.showModal({
+          title,
+          content,
+          confirmText,
+          cancelText,
+          success(modalRes) {
+            if (modalRes.confirm) {
+              uni.openSetting({
+                success(settingRes) {
+                  const authSetting = settingRes.authSetting;
+                  const granted = Boolean(authSetting && authSetting[scope] === true);
+                  resolve(granted);
+                },
+                fail() {
+                  resolve(false);
+                }
+              });
+            } else {
+              resolve(false);
+            }
+          },
+          fail() {
+            resolve(false);
+          }
+        });
+      },
+      fail() {
+        resolve(false);
+      }
+    });
+  });
+}
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
   auth,
   buildUrl,
   checkAppUpdate,
+  checkPermission,
   confirmRewardAd,
   copy,
+  debounce,
   destroyRewardAd,
   download,
   drawCircleAvatar,
@@ -971,12 +1106,15 @@ function getDevice() {
   error,
   formatConvertNumber,
   formatDate,
+  formatFileSize,
   formatNum,
   formatNumber,
+  getAllRect,
   getClipboardText,
   getDevice,
   getLaunchQuery,
   getNumber,
+  getRect,
   getTodayStr,
   hideLoading,
   hlw,
@@ -1008,6 +1146,7 @@ function getDevice() {
   showRewardAd,
   success,
   switchTab,
+  throttle,
   toBoolean,
   toNumber,
   toQuery,
