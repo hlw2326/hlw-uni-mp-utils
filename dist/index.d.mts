@@ -179,6 +179,42 @@ declare function debounce<T extends (...args: unknown[]) => unknown>(fn: T, dela
  * @param interval 间隔毫秒数，默认 300
  */
 declare function throttle<T extends (...args: unknown[]) => unknown>(fn: T, interval?: number): (...args: Parameters<T>) => void;
+/**
+ * 异步延时等待
+ * @param ms 延时毫秒数，默认 300
+ */
+declare function sleep(ms?: number): Promise<void>;
+
+/**
+ * 触感反馈震动强度类型
+ */
+type HapticType = 'light' | 'medium' | 'heavy';
+/**
+ * 触发轻量触感震动反馈
+ * @param type 震动强度：'light' 轻微 (默认) | 'medium' 中等 | 'heavy' 强烈
+ * @returns 是否成功触发
+ */
+declare function haptic(type?: HapticType): Promise<boolean>;
+
+/**
+ * 将对象序列化为 URL 查询字符串
+ * @param params 参数键值对象
+ * @param prefix 是否包含前缀 '?'，默认 false
+ */
+declare function stringifyQuery(params: Record<string, unknown>, prefix?: boolean): string;
+/**
+ * 解析 URL 或查询字符串为对象
+ * @param urlOrQuery 完整 URL 或查询字符串（例如 '?id=1&name=test' 或 'https://example.com?a=1'）
+ */
+declare function parseQuery<T extends Record<string, string> = Record<string, string>>(urlOrQuery: string): T;
+
+/**
+ * 下载网络文件并返回本地临时文件路径
+ * @param url 文件网络地址
+ * @param header 可选自定义请求头
+ * @returns 本地临时文件路径 (tempFilePath)
+ */
+declare function downloadFile(url: string, header?: Record<string, string>): Promise<string>;
 
 /**
  * 跨端安全时间戳转换（兼容 iOS/Safari 不支持连字符 "YYYY-MM-DD" 的系统限制）
@@ -508,4 +544,4 @@ interface PermissionOptions {
  */
 declare function checkPermission(scope: PermissionScope, options?: PermissionOptions): Promise<boolean>;
 
-export { type AdRes, type DeviceInfo, type DownloadOpt, type DownloadRes, type HlwInstance, type HlwMsg, type NavigateOptions, type NavigateType, type PermissionOptions, type PermissionScope, type RectInfo, type RewardOptions, type ToastCallback, type ToastRes, auth, buildUrl, checkAppUpdate, checkPermission, confirmRewardAd, copy, debounce, destroyRewardAd, download, drawCircleAvatar, drawImage, drawRoundRect, drawRoundRectImage, drawTextWithSpacing, error, formatConvertNumber, formatDate, formatFileSize, formatNum, formatNumber, getAllRect, getClipboardText, getDevice, getLaunchQuery, getNumber, getRect, getTodayStr, hideLoading, hlw, initPopupAd, isPageMatch, isTimeInRange, measureTextWithSpacing, modal, msg, navigate, navigateBack, navigateTo, navigateToMiniProgram, parseDate, parseScene, paste, playRewardAd, reLaunch, redirectTo, safeDecode, saveImage, saveImageUrl, saveVideoFile, saveVideoUrl, setClipboardText, setPopupAd, showLoading, showPopupAd, showRewardAd, success, switchTab, throttle, toBoolean, toNumber, toQuery, toast, useMsg, withQuery };
+export { type AdRes, type DeviceInfo, type DownloadOpt, type DownloadRes, type HapticType, type HlwInstance, type HlwMsg, type NavigateOptions, type NavigateType, type PermissionOptions, type PermissionScope, type RectInfo, type RewardOptions, type ToastCallback, type ToastRes, auth, buildUrl, checkAppUpdate, checkPermission, confirmRewardAd, copy, debounce, destroyRewardAd, download, downloadFile, drawCircleAvatar, drawImage, drawRoundRect, drawRoundRectImage, drawTextWithSpacing, error, formatConvertNumber, formatDate, formatFileSize, formatNum, formatNumber, getAllRect, getClipboardText, getDevice, getLaunchQuery, getNumber, getRect, getTodayStr, haptic, hideLoading, hlw, initPopupAd, isPageMatch, isTimeInRange, measureTextWithSpacing, modal, msg, navigate, navigateBack, navigateTo, navigateToMiniProgram, parseDate, parseQuery, parseScene, paste, playRewardAd, reLaunch, redirectTo, safeDecode, saveImage, saveImageUrl, saveVideoFile, saveVideoUrl, setClipboardText, setPopupAd, showLoading, showPopupAd, showRewardAd, sleep, stringifyQuery, success, switchTab, throttle, toBoolean, toNumber, toQuery, toast, useMsg, withQuery };

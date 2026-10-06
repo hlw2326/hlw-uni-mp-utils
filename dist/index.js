@@ -29,6 +29,7 @@ __export(index_exports, {
   debounce: () => debounce,
   destroyRewardAd: () => destroyRewardAd,
   download: () => download,
+  downloadFile: () => downloadFile,
   drawCircleAvatar: () => drawCircleAvatar,
   drawImage: () => drawImage,
   drawRoundRect: () => drawRoundRect,
@@ -47,6 +48,7 @@ __export(index_exports, {
   getNumber: () => getNumber,
   getRect: () => getRect,
   getTodayStr: () => getTodayStr,
+  haptic: () => haptic,
   hideLoading: () => hideLoading,
   hlw: () => hlw,
   initPopupAd: () => initPopupAd,
@@ -60,6 +62,7 @@ __export(index_exports, {
   navigateTo: () => navigateTo,
   navigateToMiniProgram: () => navigateToMiniProgram,
   parseDate: () => parseDate,
+  parseQuery: () => parseQuery,
   parseScene: () => parseScene,
   paste: () => paste,
   playRewardAd: () => playRewardAd,
@@ -75,6 +78,8 @@ __export(index_exports, {
   showLoading: () => showLoading,
   showPopupAd: () => showPopupAd,
   showRewardAd: () => showRewardAd,
+  sleep: () => sleep,
+  stringifyQuery: () => stringifyQuery,
   success: () => success,
   switchTab: () => switchTab,
   throttle: () => throttle,
@@ -387,6 +392,94 @@ function throttle(fn, interval = 300) {
       fn.apply(this, args);
     }
   };
+}
+function sleep(ms = 300) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+// src/common/haptic.ts
+function haptic(type = "light") {
+  return new Promise((resolve) => {
+    try {
+      uni.vibrateShort({
+        type,
+        success() {
+          resolve(true);
+        },
+        fail() {
+          resolve(false);
+        }
+      });
+    } catch {
+      resolve(false);
+    }
+  });
+}
+
+// src/common/query.ts
+function stringifyQuery(params, prefix = false) {
+  const pairs = [];
+  for (const [key, value] of Object.entries(params)) {
+    if (value === void 0 || value === null) {
+      continue;
+    }
+    const encodedKey = encodeURIComponent(key);
+    if (Array.isArray(value)) {
+      for (const item of value) {
+        if (item !== void 0 && item !== null) {
+          pairs.push(`${encodedKey}=${encodeURIComponent(String(item))}`);
+        }
+      }
+    } else {
+      pairs.push(`${encodedKey}=${encodeURIComponent(String(value))}`);
+    }
+  }
+  const qs = pairs.join("&");
+  if (!qs) return "";
+  return prefix ? `?${qs}` : qs;
+}
+function parseQuery(urlOrQuery) {
+  const result = {};
+  if (!urlOrQuery) return result;
+  const qIndex = urlOrQuery.indexOf("?");
+  const queryString = qIndex !== -1 ? urlOrQuery.slice(qIndex + 1) : urlOrQuery;
+  const rawPairs = queryString.split("&");
+  for (const pair of rawPairs) {
+    if (!pair) continue;
+    const eqIndex = pair.indexOf("=");
+    if (eqIndex === -1) {
+      result[decodeURIComponent(pair)] = "";
+    } else {
+      const key = decodeURIComponent(pair.slice(0, eqIndex));
+      const val = decodeURIComponent(pair.slice(eqIndex + 1));
+      result[key] = val;
+    }
+  }
+  return result;
+}
+
+// src/common/download.ts
+function downloadFile(url, header) {
+  return new Promise((resolve, reject) => {
+    if (!url) {
+      reject(new Error("\u4E0B\u8F7D\u94FE\u63A5\u4E0D\u80FD\u4E3A\u7A7A"));
+      return;
+    }
+    uni.downloadFile({
+      url,
+      header,
+      success(res) {
+        if (res.statusCode >= 200 && res.statusCode < 300 && res.tempFilePath) {
+          resolve(res.tempFilePath);
+        } else {
+          reject(new Error(`\u4E0B\u8F7D\u6587\u4EF6\u5931\u8D25\uFF0C\u72B6\u6001\u7801: ${res.statusCode}`));
+        }
+      },
+      fail(err) {
+        reject(new Error(err.errMsg || "\u4E0B\u8F7D\u6587\u4EF6\u7F51\u7EDC\u5F02\u5E38"));
+      }
+    });
+  });
 }
 
 // src/date/index.ts
@@ -1098,6 +1191,7 @@ function checkPermission(scope, options = {}) {
   debounce,
   destroyRewardAd,
   download,
+  downloadFile,
   drawCircleAvatar,
   drawImage,
   drawRoundRect,
@@ -1116,6 +1210,7 @@ function checkPermission(scope, options = {}) {
   getNumber,
   getRect,
   getTodayStr,
+  haptic,
   hideLoading,
   hlw,
   initPopupAd,
@@ -1129,6 +1224,7 @@ function checkPermission(scope, options = {}) {
   navigateTo,
   navigateToMiniProgram,
   parseDate,
+  parseQuery,
   parseScene,
   paste,
   playRewardAd,
@@ -1144,6 +1240,8 @@ function checkPermission(scope, options = {}) {
   showLoading,
   showPopupAd,
   showRewardAd,
+  sleep,
+  stringifyQuery,
   success,
   switchTab,
   throttle,

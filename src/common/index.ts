@@ -9,3 +9,6 @@ export * from "./media";
 export * from "./update";
 export * from "./launch";
 export * from "./func";
+export * from "./haptic";
+export * from "./query";
+export * from "./download";

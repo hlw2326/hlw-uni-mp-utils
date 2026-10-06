@@ -37,3 +37,12 @@ export function throttle<T extends (...args: unknown[]) => unknown>(
 		}
 	}
 }
+
+/**
+ * 异步延时等待
+ * @param ms 延时毫秒数，默认 300
+ */
+export function sleep(ms = 300): Promise<void> {
+	return new Promise((resolve) => setTimeout(resolve, ms))
+}
+

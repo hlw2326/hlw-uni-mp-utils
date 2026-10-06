@@ -17,7 +17,7 @@ Universal Uni-App 无状态通用工具函数库。100% 纯粹无状态与零 UI
 | 模块 | 核心方法 / 工具 | 描述 |
 | :--- | :--- | :--- |
 | **`msg`** | `toast`, `modal`, `showLoading`, `hideLoading`, `hlw.$msg` | 跨端轻提示、模态确认弹窗与加载态门面封装 |
-| **`common`** | `copy`, `paste`, `saveImageUrl`, `saveVideoUrl`, `checkAppUpdate`, `getLaunchQuery`, `debounce`, `throttle`, `formatFileSize`, `hlw` | 系统剪贴板、相册保存、应用更新、防抖节流与文件大小格式化 |
+| **`common`** | `copy`, `paste`, `saveImageUrl`, `saveVideoUrl`, `downloadFile`, `checkAppUpdate`, `debounce`, `throttle`, `sleep`, `haptic`, `stringifyQuery`, `parseQuery`, `formatFileSize`, `hlw` | 系统剪贴板、文件下载、防抖节流、延时等待、触感反馈、URL参数解析与大小格式化 |
 | **`navigator`** | `navigate`, `navigateTo`, `redirectTo`, `reLaunch`, `switchTab`, `navigateBack` | 跨端原生路由跳转与参数序列化 |
 | **`date`** | `formatDate`, `timeAgo`, `formatDuration` | 日期格式化与相对时间计算 |
 | **`canvas`** | `drawRoundRect`, `drawTextWrap`, `drawCircleImage` | 海报与 Canvas 2D 高频绘制工具 |
