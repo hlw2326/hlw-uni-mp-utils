@@ -248,9 +248,67 @@ declare function isTimeInRange(startAt?: string, endAt?: string, now?: number): 
 declare function formatDate(val: string | number | Date, format?: string): string;
 
 /**
+ * @hlw-uni-mp/utils Canvas 2D 绘图与海报生成辅助工具集
+ */
+/**
  * 绘制圆角矩形路径
  */
 declare function drawRoundRect(ctx: any, x: number, y: number, w: number, h: number, r: number): void;
+/**
+ * 绘制圆角矩形路径（别名，对齐常见 Canvas 习惯）
+ */
+declare const roundRectPath: typeof drawRoundRect;
+/**
+ * 填充圆角矩形
+ */
+declare function fillRoundRect(ctx: any, x: number, y: number, w: number, h: number, r: number, color: string | any): void;
+/**
+ * 描边圆角矩形
+ */
+declare function strokeRoundRect(ctx: any, x: number, y: number, w: number, h: number, r: number, color: string, lineWidth?: number): void;
+/**
+ * 异步加载 Canvas 图片（微信小程序 2D Canvas 模式 createImage）
+ * 自动处理网络地址通过 getImageInfo 转本地临时路径，支持超时与异常容错
+ */
+declare function loadCanvasImage(canvas: any, src: string): Promise<any | null>;
+/**
+ * 初始化微信小程序 2D Canvas 节点与上下文，自动按 DPR 缩放
+ */
+interface InitCanvas2DResult {
+    canvas: any;
+    ctx: any;
+    dpr: number;
+}
+declare function initCanvas2D(selector: string, width: number, height: number, instance?: any): Promise<InitCanvas2DResult>;
+/**
+ * 导出 Canvas 到临时图片路径（Promise 风格封装）
+ */
+interface ExportCanvasOptions {
+    canvas?: any;
+    canvasId?: string;
+    width?: number;
+    height?: number;
+    fileType?: "jpg" | "png";
+    quality?: number;
+    component?: any;
+    delayMs?: number;
+}
+declare function exportCanvasToImage(options: ExportCanvasOptions): Promise<string>;
+/**
+ * 绘制圆形头像（支持有图与无图首字优雅降级）
+ */
+interface DrawAvatarOptions {
+    bgColor?: string;
+    textColor?: string;
+    strokeColor?: string;
+    strokeWidth?: number;
+    fontSize?: number;
+}
+declare function drawAvatarWithFallback(ctx: any, avatarImg: any | null, name: string, x: number, y: number, size: number, options?: DrawAvatarOptions): void;
+/**
+ * 单行文本绘制并在超出 maxWidth 时自动截断并补充省略号 "..."
+ */
+declare function drawTextEllipsis(ctx: any, text: string, x: number, y: number, maxWidth: number, align?: "left" | "center" | "right", baseline?: "top" | "hanging" | "middle" | "alphabetic" | "ideographic" | "bottom"): string;
 /**
  * 异步下载并绘制图片（自动支持网络图片与本地静态图片）
  */
@@ -550,4 +608,4 @@ interface PermissionOptions {
  */
 declare function checkPermission(scope: PermissionScope, options?: PermissionOptions): Promise<boolean>;
 
-export { type AdRes, type DeviceInfo, type DownloadOpt, type DownloadRes, type HapticType, type HlwInstance, type HlwMsg, type NavigateOptions, type NavigateType, type PermissionOptions, type PermissionScope, type RectInfo, type RewardOptions, type ToastCallback, type ToastRes, auth, base64ToPath, buildUrl, checkAppUpdate, checkPermission, confirmRewardAd, copy, debounce, destroyRewardAd, download, downloadFile, drawCircleAvatar, drawImage, drawRoundRect, drawRoundRectImage, drawTextWithSpacing, error, formatConvertNumber, formatDate, formatFileSize, formatNum, formatNumber, getAllRect, getClipboardText, getDevice, getLaunchQuery, getNumber, getRect, getTodayStr, haptic, hideLoading, hlw, initPopupAd, isPageMatch, isTimeInRange, measureTextWithSpacing, modal, msg, navigate, navigateBack, navigateTo, navigateToMiniProgram, parseDate, parseQuery, parseScene, paste, playRewardAd, reLaunch, redirectTo, safeDecode, saveImage, saveImageUrl, saveVideoFile, saveVideoUrl, setClipboardText, setPopupAd, showLoading, showPopupAd, showRewardAd, sleep, stringifyQuery, success, switchTab, throttle, toBoolean, toNumber, toQuery, toast, useMsg, withQuery };
+export { type AdRes, type DeviceInfo, type DownloadOpt, type DownloadRes, type DrawAvatarOptions, type ExportCanvasOptions, type HapticType, type HlwInstance, type HlwMsg, type InitCanvas2DResult, type NavigateOptions, type NavigateType, type PermissionOptions, type PermissionScope, type RectInfo, type RewardOptions, type ToastCallback, type ToastRes, auth, base64ToPath, buildUrl, checkAppUpdate, checkPermission, confirmRewardAd, copy, debounce, destroyRewardAd, download, downloadFile, drawAvatarWithFallback, drawCircleAvatar, drawImage, drawRoundRect, drawRoundRectImage, drawTextEllipsis, drawTextWithSpacing, error, exportCanvasToImage, fillRoundRect, formatConvertNumber, formatDate, formatFileSize, formatNum, formatNumber, getAllRect, getClipboardText, getDevice, getLaunchQuery, getNumber, getRect, getTodayStr, haptic, hideLoading, hlw, initCanvas2D, initPopupAd, isPageMatch, isTimeInRange, loadCanvasImage, measureTextWithSpacing, modal, msg, navigate, navigateBack, navigateTo, navigateToMiniProgram, parseDate, parseQuery, parseScene, paste, playRewardAd, reLaunch, redirectTo, roundRectPath, safeDecode, saveImage, saveImageUrl, saveVideoFile, saveVideoUrl, setClipboardText, setPopupAd, showLoading, showPopupAd, showRewardAd, sleep, stringifyQuery, strokeRoundRect, success, switchTab, throttle, toBoolean, toNumber, toQuery, toast, useMsg, withQuery };

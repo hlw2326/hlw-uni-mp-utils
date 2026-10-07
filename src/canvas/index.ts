@@ -1,18 +1,263 @@
 /**
+ * @hlw-uni-mp/utils Canvas 2D 绘图与海报生成辅助工具集
+ */
+
+/**
  * 绘制圆角矩形路径
  */
 export function drawRoundRect(ctx: any, x: number, y: number, w: number, h: number, r: number): void {
+    if (w < 2 * r) r = w / 2;
+    if (h < 2 * r) r = h / 2;
     ctx.beginPath();
-    ctx.moveTo(x + r, y);
+    ctx.arc(x + r, y + r, r, Math.PI, Math.PI * 1.5);
     ctx.lineTo(x + w - r, y);
-    ctx.arcTo(x + w, y, x + w, y + r, r);
+    ctx.arc(x + w - r, y + r, r, Math.PI * 1.5, Math.PI * 2);
     ctx.lineTo(x + w, y + h - r);
-    ctx.arcTo(x + w, y + h, x + w - r, y + h, r);
+    ctx.arc(x + w - r, y + h - r, r, 0, Math.PI * 0.5);
     ctx.lineTo(x + r, y + h);
-    ctx.arcTo(x, y + h, x, y + h - r, r);
-    ctx.lineTo(x, y + r);
-    ctx.arcTo(x, y, x + r, y, r);
+    ctx.arc(x + r, y + h - r, r, Math.PI * 0.5, Math.PI);
     ctx.closePath();
+}
+
+/**
+ * 绘制圆角矩形路径（别名，对齐常见 Canvas 习惯）
+ */
+export const roundRectPath = drawRoundRect;
+
+/**
+ * 填充圆角矩形
+ */
+export function fillRoundRect(
+    ctx: any,
+    x: number,
+    y: number,
+    w: number,
+    h: number,
+    r: number,
+    color: string | any,
+): void {
+    ctx.fillStyle = color;
+    drawRoundRect(ctx, x, y, w, h, r);
+    ctx.fill();
+}
+
+/**
+ * 描边圆角矩形
+ */
+export function strokeRoundRect(
+    ctx: any,
+    x: number,
+    y: number,
+    w: number,
+    h: number,
+    r: number,
+    color: string,
+    lineWidth = 1,
+): void {
+    ctx.strokeStyle = color;
+    ctx.lineWidth = lineWidth;
+    drawRoundRect(ctx, x, y, w, h, r);
+    ctx.stroke();
+}
+
+/**
+ * 异步加载 Canvas 图片（微信小程序 2D Canvas 模式 createImage）
+ * 自动处理网络地址通过 getImageInfo 转本地临时路径，支持超时与异常容错
+ */
+export function loadCanvasImage(canvas: any, src: string): Promise<any | null> {
+    const path = (src || "").trim();
+    if (!path) return Promise.resolve(null);
+
+    return new Promise((resolve) => {
+        let isDone = false;
+        const done = (img: any | null) => {
+            if (!isDone) {
+                isDone = true;
+                resolve(img);
+            }
+        };
+
+        const tryCreate = (finalSrc: string) => {
+            try {
+                const img = canvas.createImage();
+                img.onload = () => done(img);
+                img.onerror = () => done(null);
+                img.src = finalSrc;
+            } catch {
+                done(null);
+            }
+        };
+
+        if (path.startsWith("http://") || path.startsWith("https://") || path.startsWith("//")) {
+            const httpPath = path.startsWith("//") ? `https:${path}` : path;
+            uni.getImageInfo({
+                src: httpPath,
+                success: (res) => tryCreate(res.path || httpPath),
+                fail: () => tryCreate(httpPath),
+            });
+        } else {
+            tryCreate(path);
+        }
+
+        // 5秒超时保底
+        setTimeout(() => done(null), 5000);
+    });
+}
+
+/**
+ * 初始化微信小程序 2D Canvas 节点与上下文，自动按 DPR 缩放
+ */
+export interface InitCanvas2DResult {
+    canvas: any;
+    ctx: any;
+    dpr: number;
+}
+
+export function initCanvas2D(
+    selector: string,
+    width: number,
+    height: number,
+    instance?: any,
+): Promise<InitCanvas2DResult> {
+    return new Promise((resolve, reject) => {
+        let query = uni.createSelectorQuery();
+        if (instance) {
+            query = query.in(instance);
+        }
+        query
+            .select(selector)
+            .fields({ node: true, size: true }, () => {})
+            .exec((res) => {
+                if (!res || !res[0] || !res[0].node) {
+                    reject(new Error(`[initCanvas2D] 未找到 Canvas 节点：${selector}`));
+                    return;
+                }
+                const canvas = res[0].node;
+                const ctx = canvas.getContext("2d");
+                const dpr = uni.getWindowInfo?.()?.pixelRatio || 2;
+                canvas.width = width * dpr;
+                canvas.height = height * dpr;
+                ctx.scale(dpr, dpr);
+                resolve({ canvas, ctx, dpr });
+            });
+    });
+}
+
+/**
+ * 导出 Canvas 到临时图片路径（Promise 风格封装）
+ */
+export interface ExportCanvasOptions {
+    canvas?: any;
+    canvasId?: string;
+    width?: number;
+    height?: number;
+    fileType?: "jpg" | "png";
+    quality?: number;
+    component?: any;
+    delayMs?: number;
+}
+
+export function exportCanvasToImage(options: ExportCanvasOptions): Promise<string> {
+    return new Promise((resolve, reject) => {
+        setTimeout(() => {
+            const config: any = {
+                fileType: options.fileType || "png",
+                quality: options.quality ?? 1,
+                success: (res: any) => resolve(res.tempFilePath),
+                fail: (err: any) => reject(err),
+            };
+            if (options.canvas) config.canvas = options.canvas;
+            if (options.canvasId) config.canvasId = options.canvasId;
+            if (options.width) config.destWidth = options.width * 2;
+            if (options.height) config.destHeight = options.height * 2;
+
+            uni.canvasToTempFilePath(config, options.component);
+        }, options.delayMs ?? 150);
+    });
+}
+
+/**
+ * 绘制圆形头像（支持有图与无图首字优雅降级）
+ */
+export interface DrawAvatarOptions {
+    bgColor?: string;
+    textColor?: string;
+    strokeColor?: string;
+    strokeWidth?: number;
+    fontSize?: number;
+}
+
+export function drawAvatarWithFallback(
+    ctx: any,
+    avatarImg: any | null,
+    name: string,
+    x: number,
+    y: number,
+    size: number,
+    options?: DrawAvatarOptions,
+): void {
+    const r = size / 2;
+    const cx = x + r;
+    const cy = y + r;
+    const bgColor = options?.bgColor || "#059669";
+    const textColor = options?.textColor || "#FFFFFF";
+    const strokeColor = options?.strokeColor || "#E2E8F0";
+    const strokeWidth = options?.strokeWidth ?? 1.5;
+    const fontSize = options?.fontSize || Math.round(size * 0.4);
+
+    if (avatarImg) {
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(cx, cy, r, 0, Math.PI * 2);
+        ctx.closePath();
+        ctx.clip();
+        ctx.drawImage(avatarImg, x, y, size, size);
+        ctx.restore();
+
+        if (strokeColor && strokeWidth > 0) {
+            ctx.strokeStyle = strokeColor;
+            ctx.lineWidth = strokeWidth;
+            ctx.beginPath();
+            ctx.arc(cx, cy, r, 0, Math.PI * 2);
+            ctx.stroke();
+        }
+    } else {
+        fillRoundRect(ctx, x, y, size, size, r, bgColor);
+        ctx.fillStyle = textColor;
+        ctx.font = `bold ${fontSize}px sans-serif`;
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        const firstChar = (name || "牌").trim().charAt(0).toUpperCase() || "牌";
+        ctx.fillText(firstChar, cx, cy);
+    }
+}
+
+/**
+ * 单行文本绘制并在超出 maxWidth 时自动截断并补充省略号 "..."
+ */
+export function drawTextEllipsis(
+    ctx: any,
+    text: string,
+    x: number,
+    y: number,
+    maxWidth: number,
+    align: "left" | "center" | "right" = "left",
+    baseline: "top" | "hanging" | "middle" | "alphabetic" | "ideographic" | "bottom" = "alphabetic",
+): string {
+    ctx.textAlign = align;
+    ctx.textBaseline = baseline;
+    const str = text || "";
+    if (!str || ctx.measureText(str).width <= maxWidth) {
+        ctx.fillText(str, x, y);
+        return str;
+    }
+    let truncated = str;
+    while (truncated.length > 0 && ctx.measureText(`${truncated}...`).width > maxWidth) {
+        truncated = truncated.slice(0, -1);
+    }
+    const result = `${truncated}...`;
+    ctx.fillText(result, x, y);
+    return result;
 }
 
 /**

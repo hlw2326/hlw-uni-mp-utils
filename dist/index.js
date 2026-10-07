@@ -31,12 +31,16 @@ __export(index_exports, {
   destroyRewardAd: () => destroyRewardAd,
   download: () => download,
   downloadFile: () => downloadFile,
+  drawAvatarWithFallback: () => drawAvatarWithFallback,
   drawCircleAvatar: () => drawCircleAvatar,
   drawImage: () => drawImage,
   drawRoundRect: () => drawRoundRect,
   drawRoundRectImage: () => drawRoundRectImage,
+  drawTextEllipsis: () => drawTextEllipsis,
   drawTextWithSpacing: () => drawTextWithSpacing,
   error: () => error,
+  exportCanvasToImage: () => exportCanvasToImage,
+  fillRoundRect: () => fillRoundRect,
   formatConvertNumber: () => formatConvertNumber,
   formatDate: () => formatDate,
   formatFileSize: () => formatFileSize,
@@ -52,9 +56,11 @@ __export(index_exports, {
   haptic: () => haptic,
   hideLoading: () => hideLoading,
   hlw: () => hlw,
+  initCanvas2D: () => initCanvas2D,
   initPopupAd: () => initPopupAd,
   isPageMatch: () => isPageMatch,
   isTimeInRange: () => isTimeInRange,
+  loadCanvasImage: () => loadCanvasImage,
   measureTextWithSpacing: () => measureTextWithSpacing,
   modal: () => modal,
   msg: () => msg,
@@ -69,6 +75,7 @@ __export(index_exports, {
   playRewardAd: () => playRewardAd,
   reLaunch: () => reLaunch,
   redirectTo: () => redirectTo,
+  roundRectPath: () => roundRectPath,
   safeDecode: () => safeDecode,
   saveImage: () => saveImage,
   saveImageUrl: () => saveImageUrl,
@@ -81,6 +88,7 @@ __export(index_exports, {
   showRewardAd: () => showRewardAd,
   sleep: () => sleep,
   stringifyQuery: () => stringifyQuery,
+  strokeRoundRect: () => strokeRoundRect,
   success: () => success,
   switchTab: () => switchTab,
   throttle: () => throttle,
@@ -580,17 +588,152 @@ function formatDate(val, format = "YYYY-MM-DD HH:mm:ss") {
 
 // src/canvas/index.ts
 function drawRoundRect(ctx, x, y, w, h, r) {
+  if (w < 2 * r) r = w / 2;
+  if (h < 2 * r) r = h / 2;
   ctx.beginPath();
-  ctx.moveTo(x + r, y);
+  ctx.arc(x + r, y + r, r, Math.PI, Math.PI * 1.5);
   ctx.lineTo(x + w - r, y);
-  ctx.arcTo(x + w, y, x + w, y + r, r);
+  ctx.arc(x + w - r, y + r, r, Math.PI * 1.5, Math.PI * 2);
   ctx.lineTo(x + w, y + h - r);
-  ctx.arcTo(x + w, y + h, x + w - r, y + h, r);
+  ctx.arc(x + w - r, y + h - r, r, 0, Math.PI * 0.5);
   ctx.lineTo(x + r, y + h);
-  ctx.arcTo(x, y + h, x, y + h - r, r);
-  ctx.lineTo(x, y + r);
-  ctx.arcTo(x, y, x + r, y, r);
+  ctx.arc(x + r, y + h - r, r, Math.PI * 0.5, Math.PI);
   ctx.closePath();
+}
+var roundRectPath = drawRoundRect;
+function fillRoundRect(ctx, x, y, w, h, r, color) {
+  ctx.fillStyle = color;
+  drawRoundRect(ctx, x, y, w, h, r);
+  ctx.fill();
+}
+function strokeRoundRect(ctx, x, y, w, h, r, color, lineWidth = 1) {
+  ctx.strokeStyle = color;
+  ctx.lineWidth = lineWidth;
+  drawRoundRect(ctx, x, y, w, h, r);
+  ctx.stroke();
+}
+function loadCanvasImage(canvas, src) {
+  const path = (src || "").trim();
+  if (!path) return Promise.resolve(null);
+  return new Promise((resolve) => {
+    let isDone = false;
+    const done = (img) => {
+      if (!isDone) {
+        isDone = true;
+        resolve(img);
+      }
+    };
+    const tryCreate = (finalSrc) => {
+      try {
+        const img = canvas.createImage();
+        img.onload = () => done(img);
+        img.onerror = () => done(null);
+        img.src = finalSrc;
+      } catch {
+        done(null);
+      }
+    };
+    if (path.startsWith("http://") || path.startsWith("https://") || path.startsWith("//")) {
+      const httpPath = path.startsWith("//") ? `https:${path}` : path;
+      uni.getImageInfo({
+        src: httpPath,
+        success: (res) => tryCreate(res.path || httpPath),
+        fail: () => tryCreate(httpPath)
+      });
+    } else {
+      tryCreate(path);
+    }
+    setTimeout(() => done(null), 5e3);
+  });
+}
+function initCanvas2D(selector, width, height, instance) {
+  return new Promise((resolve, reject) => {
+    let query = uni.createSelectorQuery();
+    if (instance) {
+      query = query.in(instance);
+    }
+    query.select(selector).fields({ node: true, size: true }, () => {
+    }).exec((res) => {
+      if (!res || !res[0] || !res[0].node) {
+        reject(new Error(`[initCanvas2D] \u672A\u627E\u5230 Canvas \u8282\u70B9\uFF1A${selector}`));
+        return;
+      }
+      const canvas = res[0].node;
+      const ctx = canvas.getContext("2d");
+      const dpr = uni.getWindowInfo?.()?.pixelRatio || 2;
+      canvas.width = width * dpr;
+      canvas.height = height * dpr;
+      ctx.scale(dpr, dpr);
+      resolve({ canvas, ctx, dpr });
+    });
+  });
+}
+function exportCanvasToImage(options) {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      const config = {
+        fileType: options.fileType || "png",
+        quality: options.quality ?? 1,
+        success: (res) => resolve(res.tempFilePath),
+        fail: (err) => reject(err)
+      };
+      if (options.canvas) config.canvas = options.canvas;
+      if (options.canvasId) config.canvasId = options.canvasId;
+      if (options.width) config.destWidth = options.width * 2;
+      if (options.height) config.destHeight = options.height * 2;
+      uni.canvasToTempFilePath(config, options.component);
+    }, options.delayMs ?? 150);
+  });
+}
+function drawAvatarWithFallback(ctx, avatarImg, name, x, y, size, options) {
+  const r = size / 2;
+  const cx = x + r;
+  const cy = y + r;
+  const bgColor = options?.bgColor || "#059669";
+  const textColor = options?.textColor || "#FFFFFF";
+  const strokeColor = options?.strokeColor || "#E2E8F0";
+  const strokeWidth = options?.strokeWidth ?? 1.5;
+  const fontSize = options?.fontSize || Math.round(size * 0.4);
+  if (avatarImg) {
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(cx, cy, r, 0, Math.PI * 2);
+    ctx.closePath();
+    ctx.clip();
+    ctx.drawImage(avatarImg, x, y, size, size);
+    ctx.restore();
+    if (strokeColor && strokeWidth > 0) {
+      ctx.strokeStyle = strokeColor;
+      ctx.lineWidth = strokeWidth;
+      ctx.beginPath();
+      ctx.arc(cx, cy, r, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+  } else {
+    fillRoundRect(ctx, x, y, size, size, r, bgColor);
+    ctx.fillStyle = textColor;
+    ctx.font = `bold ${fontSize}px sans-serif`;
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    const firstChar = (name || "\u724C").trim().charAt(0).toUpperCase() || "\u724C";
+    ctx.fillText(firstChar, cx, cy);
+  }
+}
+function drawTextEllipsis(ctx, text, x, y, maxWidth, align = "left", baseline = "alphabetic") {
+  ctx.textAlign = align;
+  ctx.textBaseline = baseline;
+  const str = text || "";
+  if (!str || ctx.measureText(str).width <= maxWidth) {
+    ctx.fillText(str, x, y);
+    return str;
+  }
+  let truncated = str;
+  while (truncated.length > 0 && ctx.measureText(`${truncated}...`).width > maxWidth) {
+    truncated = truncated.slice(0, -1);
+  }
+  const result = `${truncated}...`;
+  ctx.fillText(result, x, y);
+  return result;
 }
 function drawImage(canvas, ctx, src, x, y, w, h) {
   return new Promise((resolve) => {
@@ -1231,12 +1374,16 @@ function checkPermission(scope, options = {}) {
   destroyRewardAd,
   download,
   downloadFile,
+  drawAvatarWithFallback,
   drawCircleAvatar,
   drawImage,
   drawRoundRect,
   drawRoundRectImage,
+  drawTextEllipsis,
   drawTextWithSpacing,
   error,
+  exportCanvasToImage,
+  fillRoundRect,
   formatConvertNumber,
   formatDate,
   formatFileSize,
@@ -1252,9 +1399,11 @@ function checkPermission(scope, options = {}) {
   haptic,
   hideLoading,
   hlw,
+  initCanvas2D,
   initPopupAd,
   isPageMatch,
   isTimeInRange,
+  loadCanvasImage,
   measureTextWithSpacing,
   modal,
   msg,
@@ -1269,6 +1418,7 @@ function checkPermission(scope, options = {}) {
   playRewardAd,
   reLaunch,
   redirectTo,
+  roundRectPath,
   safeDecode,
   saveImage,
   saveImageUrl,
@@ -1281,6 +1431,7 @@ function checkPermission(scope, options = {}) {
   showRewardAd,
   sleep,
   stringifyQuery,
+  strokeRoundRect,
   success,
   switchTab,
   throttle,
