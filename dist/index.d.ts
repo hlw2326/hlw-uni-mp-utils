@@ -111,11 +111,17 @@ interface DownloadRes {
  */
 declare function auth(): void;
 /**
- * 保存本地临时图片文件到系统相册
- * @param filePath 本地临时图片路径
+ * 将 Base64 图片数据转换为本地临时文件路径
+ * @param base64 Base64 图片字符串 (例如 data:image/png;base64,xxx 或纯 base64)
+ * @returns 本地临时文件路径 (失败返回空字符串)
+ */
+declare function base64ToPath(base64: string): Promise<string>;
+/**
+ * 保存图片到系统相册（全能支持：本地临时文件路径、网络图片 URL、Base64 数据）
+ * @param src 本地文件路径、网络地址或 Base64 字符串
  * @returns 保存是否成功
  */
-declare function saveImage(filePath: string): Promise<boolean>;
+declare function saveImage(src: string): Promise<boolean>;
 /**
  * 保存本地临时视频文件到系统相册
  * @param filePath 本地临时视频路径
@@ -544,4 +550,4 @@ interface PermissionOptions {
  */
 declare function checkPermission(scope: PermissionScope, options?: PermissionOptions): Promise<boolean>;
 
-export { type AdRes, type DeviceInfo, type DownloadOpt, type DownloadRes, type HapticType, type HlwInstance, type HlwMsg, type NavigateOptions, type NavigateType, type PermissionOptions, type PermissionScope, type RectInfo, type RewardOptions, type ToastCallback, type ToastRes, auth, buildUrl, checkAppUpdate, checkPermission, confirmRewardAd, copy, debounce, destroyRewardAd, download, downloadFile, drawCircleAvatar, drawImage, drawRoundRect, drawRoundRectImage, drawTextWithSpacing, error, formatConvertNumber, formatDate, formatFileSize, formatNum, formatNumber, getAllRect, getClipboardText, getDevice, getLaunchQuery, getNumber, getRect, getTodayStr, haptic, hideLoading, hlw, initPopupAd, isPageMatch, isTimeInRange, measureTextWithSpacing, modal, msg, navigate, navigateBack, navigateTo, navigateToMiniProgram, parseDate, parseQuery, parseScene, paste, playRewardAd, reLaunch, redirectTo, safeDecode, saveImage, saveImageUrl, saveVideoFile, saveVideoUrl, setClipboardText, setPopupAd, showLoading, showPopupAd, showRewardAd, sleep, stringifyQuery, success, switchTab, throttle, toBoolean, toNumber, toQuery, toast, useMsg, withQuery };
+export { type AdRes, type DeviceInfo, type DownloadOpt, type DownloadRes, type HapticType, type HlwInstance, type HlwMsg, type NavigateOptions, type NavigateType, type PermissionOptions, type PermissionScope, type RectInfo, type RewardOptions, type ToastCallback, type ToastRes, auth, base64ToPath, buildUrl, checkAppUpdate, checkPermission, confirmRewardAd, copy, debounce, destroyRewardAd, download, downloadFile, drawCircleAvatar, drawImage, drawRoundRect, drawRoundRectImage, drawTextWithSpacing, error, formatConvertNumber, formatDate, formatFileSize, formatNum, formatNumber, getAllRect, getClipboardText, getDevice, getLaunchQuery, getNumber, getRect, getTodayStr, haptic, hideLoading, hlw, initPopupAd, isPageMatch, isTimeInRange, measureTextWithSpacing, modal, msg, navigate, navigateBack, navigateTo, navigateToMiniProgram, parseDate, parseQuery, parseScene, paste, playRewardAd, reLaunch, redirectTo, safeDecode, saveImage, saveImageUrl, saveVideoFile, saveVideoUrl, setClipboardText, setPopupAd, showLoading, showPopupAd, showRewardAd, sleep, stringifyQuery, success, switchTab, throttle, toBoolean, toNumber, toQuery, toast, useMsg, withQuery };

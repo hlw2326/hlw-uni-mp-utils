@@ -31,9 +31,9 @@ export interface DownloadRes {
  */
 export function auth(): void {
     uni.showModal({
-        title: "提示",
-        content: "需要授权相册权限",
-        confirmText: "去设置",
+        title: "授权提示",
+        content: "保存需要相册访问权限，是否前往设置开启？",
+        confirmText: "去开启",
         success: (res) => {
             if (res.confirm) {
                 uni.openSetting();
@@ -43,17 +43,66 @@ export function auth(): void {
 }
 
 /**
- * 保存本地临时图片文件到系统相册
- * @param filePath 本地临时图片路径
+ * 将 Base64 图片数据转换为本地临时文件路径
+ * @param base64 Base64 图片字符串 (例如 data:image/png;base64,xxx 或纯 base64)
+ * @returns 本地临时文件路径 (失败返回空字符串)
+ */
+export function base64ToPath(base64: string): Promise<string> {
+    return new Promise((resolve) => {
+        if (!base64) return resolve("");
+        try {
+            const fs = uni.getFileSystemManager();
+            const matches = /data:image\/(\w+);base64,(.*)/.exec(base64);
+            const ext = matches?.[1] || "png";
+            const data = matches?.[2] || base64;
+            const env = (uni as any).env || ((globalThis as any).wx?.env) || null;
+            const userDir = env?.USER_DATA_PATH || "";
+            const filePath = `${userDir}/tmp_${Date.now()}_${Math.random().toString(36).slice(2, 8)}.${ext}`;
+            fs.writeFile({
+                filePath,
+                data,
+                encoding: "base64",
+                success: () => resolve(filePath),
+                fail: () => resolve(""),
+            });
+        } catch {
+            resolve("");
+        }
+    });
+}
+
+/**
+ * 保存图片到系统相册（全能支持：本地临时文件路径、网络图片 URL、Base64 数据）
+ * @param src 本地文件路径、网络地址或 Base64 字符串
  * @returns 保存是否成功
  */
-export function saveImage(filePath: string): Promise<boolean> {
+export async function saveImage(src: string): Promise<boolean> {
+    if (!src) return false;
+
+    let targetPath = src;
+
+    // 1. 网络地址：自动下载为本地临时文件
+    if (/^(https?:)?\/\//.test(src)) {
+        const res = await download({ url: src });
+        if (!res.ok || !res.path) {
+            return false;
+        }
+        targetPath = res.path;
+    }
+    // 2. Base64 数据：自动转存为本地临时文件
+    else if (src.startsWith("data:image") || src.startsWith("data:")) {
+        targetPath = await base64ToPath(src);
+        if (!targetPath) {
+            return false;
+        }
+    }
+
     return new Promise((resolve) => {
         uni.saveImageToPhotosAlbum({
-            filePath,
+            filePath: targetPath,
             success: () => resolve(true),
             fail: (error) => {
-                const errMsg = String(error.errMsg || "");
+                const errMsg = String(error?.errMsg || "");
                 if (errMsg.includes("auth deny") || errMsg.includes("authorize")) {
                     auth();
                 }
@@ -74,7 +123,7 @@ export function saveVideoFile(filePath: string): Promise<boolean> {
             filePath,
             success: () => resolve(true),
             fail: (error) => {
-                const errMsg = String(error.errMsg || "");
+                const errMsg = String(error?.errMsg || "");
                 if (errMsg.includes("auth deny") || errMsg.includes("authorize")) {
                     auth();
                 }

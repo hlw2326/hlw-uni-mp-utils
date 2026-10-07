@@ -131,9 +131,9 @@ var getClipboardText = paste;
 // src/common/media.ts
 function auth() {
   uni.showModal({
-    title: "\u63D0\u793A",
-    content: "\u9700\u8981\u6388\u6743\u76F8\u518C\u6743\u9650",
-    confirmText: "\u53BB\u8BBE\u7F6E",
+    title: "\u6388\u6743\u63D0\u793A",
+    content: "\u4FDD\u5B58\u9700\u8981\u76F8\u518C\u8BBF\u95EE\u6743\u9650\uFF0C\u662F\u5426\u524D\u5F80\u8BBE\u7F6E\u5F00\u542F\uFF1F",
+    confirmText: "\u53BB\u5F00\u542F",
     success: (res) => {
       if (res.confirm) {
         uni.openSetting();
@@ -141,13 +141,50 @@ function auth() {
     }
   });
 }
-function saveImage(filePath) {
+function base64ToPath(base64) {
+  return new Promise((resolve) => {
+    if (!base64) return resolve("");
+    try {
+      const fs = uni.getFileSystemManager();
+      const matches = /data:image\/(\w+);base64,(.*)/.exec(base64);
+      const ext = matches?.[1] || "png";
+      const data = matches?.[2] || base64;
+      const env = uni.env || globalThis.wx?.env || null;
+      const userDir = env?.USER_DATA_PATH || "";
+      const filePath = `${userDir}/tmp_${Date.now()}_${Math.random().toString(36).slice(2, 8)}.${ext}`;
+      fs.writeFile({
+        filePath,
+        data,
+        encoding: "base64",
+        success: () => resolve(filePath),
+        fail: () => resolve("")
+      });
+    } catch {
+      resolve("");
+    }
+  });
+}
+async function saveImage(src) {
+  if (!src) return false;
+  let targetPath = src;
+  if (/^(https?:)?\/\//.test(src)) {
+    const res = await download({ url: src });
+    if (!res.ok || !res.path) {
+      return false;
+    }
+    targetPath = res.path;
+  } else if (src.startsWith("data:image") || src.startsWith("data:")) {
+    targetPath = await base64ToPath(src);
+    if (!targetPath) {
+      return false;
+    }
+  }
   return new Promise((resolve) => {
     uni.saveImageToPhotosAlbum({
-      filePath,
+      filePath: targetPath,
       success: () => resolve(true),
       fail: (error2) => {
-        const errMsg = String(error2.errMsg || "");
+        const errMsg = String(error2?.errMsg || "");
         if (errMsg.includes("auth deny") || errMsg.includes("authorize")) {
           auth();
         }
@@ -162,7 +199,7 @@ function saveVideoFile(filePath) {
       filePath,
       success: () => resolve(true),
       fail: (error2) => {
-        const errMsg = String(error2.errMsg || "");
+        const errMsg = String(error2?.errMsg || "");
         if (errMsg.includes("auth deny") || errMsg.includes("authorize")) {
           auth();
         }
@@ -1088,6 +1125,7 @@ function checkPermission(scope, options = {}) {
 }
 export {
   auth,
+  base64ToPath,
   buildUrl,
   checkAppUpdate,
   checkPermission,
