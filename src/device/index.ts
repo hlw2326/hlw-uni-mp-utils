@@ -105,7 +105,7 @@ export function getDevice(): DeviceInfo {
 		hostLanguage: appRaw.hostLanguage || '',
 		hostTheme: appRaw.hostTheme || '',
 		platform: deviceRaw.platform || '',
-		language: appRaw.appLanguage || appRaw.language || '',
+		language: appRaw.appLanguage || '',
 		networkType: currentNetworkType,
 		benchmarkLevel: deviceRaw.benchmarkLevel || 0,
 		theme: appRaw.theme || 'light',

@@ -19,10 +19,7 @@ export function drawRoundRect(ctx: any, x: number, y: number, w: number, h: numb
     ctx.closePath();
 }
 
-/**
- * 绘制圆角矩形路径（别名，对齐常见 Canvas 习惯）
- */
-export const roundRectPath = drawRoundRect;
+
 
 /**
  * 填充圆角矩形
@@ -146,7 +143,7 @@ export function initCanvas2D(
 /**
  * 导出 Canvas 到临时图片路径（Promise 风格封装）
  */
-export interface ExportCanvasOptions {
+export interface ExportCanvasOption {
     canvas?: any;
     canvasId?: string;
     width?: number;
@@ -157,7 +154,7 @@ export interface ExportCanvasOptions {
     delayMs?: number;
 }
 
-export function exportCanvasToImage(options: ExportCanvasOptions): Promise<string> {
+export function exportCanvasToImage(options: ExportCanvasOption): Promise<string> {
     return new Promise((resolve, reject) => {
         setTimeout(() => {
             const config: any = {
@@ -179,7 +176,7 @@ export function exportCanvasToImage(options: ExportCanvasOptions): Promise<strin
 /**
  * 绘制圆形头像（支持有图与无图首字优雅降级）
  */
-export interface DrawAvatarOptions {
+export interface DrawAvatarOption {
     bgColor?: string;
     textColor?: string;
     strokeColor?: string;
@@ -194,7 +191,7 @@ export function drawAvatarWithFallback(
     x: number,
     y: number,
     size: number,
-    options?: DrawAvatarOptions,
+    options?: DrawAvatarOption,
 ): void {
     const r = size / 2;
     const cx = x + r;

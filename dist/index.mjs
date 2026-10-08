@@ -124,8 +124,6 @@ function paste() {
     });
   });
 }
-var setClipboardText = copy;
-var getClipboardText = paste;
 
 // src/common/media.ts
 function auth() {
@@ -463,7 +461,7 @@ function formatDate(val, format = "YYYY-MM-DD HH:mm:ss") {
     return "";
   }
   const d = new Date(time);
-  const opt = {
+  const dict = {
     "Y+": String(d.getFullYear()),
     "M+": String(d.getMonth() + 1).padStart(2, "0"),
     "D+": String(d.getDate()).padStart(2, "0"),
@@ -472,10 +470,10 @@ function formatDate(val, format = "YYYY-MM-DD HH:mm:ss") {
     "s+": String(d.getSeconds()).padStart(2, "0")
   };
   let result = format;
-  for (const k in opt) {
+  for (const k in dict) {
     const reg = new RegExp(`(${k})`);
     if (reg.test(result)) {
-      result = result.replace(reg, opt[k]);
+      result = result.replace(reg, dict[k]);
     }
   }
   return result;
@@ -495,7 +493,6 @@ function drawRoundRect(ctx, x, y, w, h, r) {
   ctx.arc(x + r, y + h - r, r, Math.PI * 0.5, Math.PI);
   ctx.closePath();
 }
-var roundRectPath = drawRoundRect;
 function fillRoundRect(ctx, x, y, w, h, r, color) {
   ctx.fillStyle = color;
   drawRoundRect(ctx, x, y, w, h, r);
@@ -1076,7 +1073,7 @@ function modal(opts = {}) {
       confirmColor = "#3b82f6",
       cancelColor = "#999999",
       showCancel = true
-    } = opts || {};
+    } = opts;
     uni.showModal({
       title,
       content,
@@ -1151,7 +1148,7 @@ function getDevice() {
     hostLanguage: appRaw.hostLanguage || "",
     hostTheme: appRaw.hostTheme || "",
     platform: deviceRaw.platform || "",
-    language: appRaw.appLanguage || appRaw.language || "",
+    language: appRaw.appLanguage || "",
     networkType: currentNetworkType,
     benchmarkLevel: deviceRaw.benchmarkLevel || 0,
     theme: appRaw.theme || "light",
@@ -1282,7 +1279,6 @@ export {
   formatNum,
   formatNumber,
   getAllRect,
-  getClipboardText,
   getDevice,
   getLaunchQuery,
   getNumber,
@@ -1310,13 +1306,11 @@ export {
   playRewardAd,
   reLaunch,
   redirectTo,
-  roundRectPath,
   safeDecode,
   saveImage,
   saveImageUrl,
   saveVideoFile,
   saveVideoUrl,
-  setClipboardText,
   setPopupAd,
   showLoading,
   showPopupAd,

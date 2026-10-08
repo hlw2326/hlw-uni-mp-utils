@@ -1,7 +1,7 @@
 /**
  * 资源下载配置选项
  */
-export interface DownloadOpt {
+export interface DownloadOption {
     /** 资源网络下载地址 */
     url: string;
     /** 指定的本地临时存储路径 */
@@ -137,7 +137,7 @@ export function saveVideoFile(filePath: string): Promise<boolean> {
  * @param options 下载配置参数
  * @returns 下载结果 Promise
  */
-export function download(options: DownloadOpt): Promise<DownloadRes> {
+export function download(options: DownloadOption): Promise<DownloadRes> {
     return new Promise((resolve) => {
         const task = uni.downloadFile({
             url: options.url,

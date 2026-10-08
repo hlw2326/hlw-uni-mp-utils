@@ -73,15 +73,11 @@ declare function copy(text: string, successMsg?: string): Promise<boolean>;
  * @returns 剪贴板文本内容
  */
 declare function paste(): Promise<string>;
-/** 写入剪贴板别名 */
-declare const setClipboardText: typeof copy;
-/** 读取剪贴板别名 */
-declare const getClipboardText: typeof paste;
 
 /**
  * 资源下载配置选项
  */
-interface DownloadOpt {
+interface DownloadOption {
     /** 资源网络下载地址 */
     url: string;
     /** 指定的本地临时存储路径 */
@@ -131,7 +127,7 @@ declare function saveVideoFile(filePath: string): Promise<boolean>;
  * @param options 下载配置参数
  * @returns 下载结果 Promise
  */
-declare function download(options: DownloadOpt): Promise<DownloadRes>;
+declare function download(options: DownloadOption): Promise<DownloadRes>;
 /**
  * 下载网络图片并直接保存至系统相册
  * @param url 网络图片地址
@@ -253,10 +249,6 @@ declare function formatDate(val: string | number | Date, format?: string): strin
  */
 declare function drawRoundRect(ctx: any, x: number, y: number, w: number, h: number, r: number): void;
 /**
- * 绘制圆角矩形路径（别名，对齐常见 Canvas 习惯）
- */
-declare const roundRectPath: typeof drawRoundRect;
-/**
  * 填充圆角矩形
  */
 declare function fillRoundRect(ctx: any, x: number, y: number, w: number, h: number, r: number, color: string | any): void;
@@ -281,7 +273,7 @@ declare function initCanvas2D(selector: string, width: number, height: number, i
 /**
  * 导出 Canvas 到临时图片路径（Promise 风格封装）
  */
-interface ExportCanvasOptions {
+interface ExportCanvasOption {
     canvas?: any;
     canvasId?: string;
     width?: number;
@@ -291,18 +283,18 @@ interface ExportCanvasOptions {
     component?: any;
     delayMs?: number;
 }
-declare function exportCanvasToImage(options: ExportCanvasOptions): Promise<string>;
+declare function exportCanvasToImage(options: ExportCanvasOption): Promise<string>;
 /**
  * 绘制圆形头像（支持有图与无图首字优雅降级）
  */
-interface DrawAvatarOptions {
+interface DrawAvatarOption {
     bgColor?: string;
     textColor?: string;
     strokeColor?: string;
     strokeWidth?: number;
     fontSize?: number;
 }
-declare function drawAvatarWithFallback(ctx: any, avatarImg: any | null, name: string, x: number, y: number, size: number, options?: DrawAvatarOptions): void;
+declare function drawAvatarWithFallback(ctx: any, avatarImg: any | null, name: string, x: number, y: number, size: number, options?: DrawAvatarOption): void;
 /**
  * 单行文本绘制并在超出 maxWidth 时自动截断并补充省略号 "..."
  */
@@ -335,7 +327,7 @@ type NavigateType = "navigateTo" | "redirectTo" | "switchTab" | "reLaunch" | "na
 /**
  * 路由配置项
  */
-interface NavigateOptions {
+interface NavigateOption {
     /** 是否静默失败（不弹窗提示错误，默认 false） */
     silent?: boolean;
     /** 跳转失败回调函数 */
@@ -359,19 +351,19 @@ interface NavigateOptions {
  * @param options 额外的控制与传参选项
  * @returns 是否跳转成功
  */
-declare function navigate(type?: NavigateType, url?: string, options?: NavigateOptions): Promise<boolean>;
+declare function navigate(type?: NavigateType, url?: string, options?: NavigateOption): Promise<boolean>;
 /** 保留当前页面，跳转到应用内的某个页面 */
-declare function navigateTo(url: string, options?: NavigateOptions): Promise<boolean>;
+declare function navigateTo(url: string, options?: NavigateOption): Promise<boolean>;
 /** 关闭当前页面，跳转到应用内的某个页面 */
-declare function redirectTo(url: string, options?: NavigateOptions): Promise<boolean>;
+declare function redirectTo(url: string, options?: NavigateOption): Promise<boolean>;
 /** 跳转到 switchTab 页面，并关闭其他所有非 tabBar 页面 */
-declare function switchTab(url: string, options?: NavigateOptions): Promise<boolean>;
+declare function switchTab(url: string, options?: NavigateOption): Promise<boolean>;
 /** 关闭所有页面，打开到应用内的某个页面 */
-declare function reLaunch(url: string, options?: NavigateOptions): Promise<boolean>;
+declare function reLaunch(url: string, options?: NavigateOption): Promise<boolean>;
 /** 关闭当前页面，返回上一页面或多级页面 */
-declare function navigateBack(delta?: number, options?: NavigateOptions): Promise<boolean>;
+declare function navigateBack(delta?: number, options?: NavigateOption): Promise<boolean>;
 /** 打开另一个小程序 */
-declare function navigateToMiniProgram(appId: string, options?: NavigateOptions): Promise<boolean>;
+declare function navigateToMiniProgram(appId: string, options?: NavigateOption): Promise<boolean>;
 
 /**
  * 初始化或重建当前页面的插屏广告
@@ -400,7 +392,7 @@ interface AdRes {
 /**
  * 激励视频参数配置
  */
-interface RewardOptions {
+interface RewardOption {
     /** 广告单元 ID */
     unitId: string;
     /** 广告拉起成功回调 */
@@ -413,7 +405,7 @@ declare function destroyRewardAd(adId: string): void;
 /**
  * 展示激励视频广告
  */
-declare function showRewardAd(options: string | RewardOptions): Promise<AdRes>;
+declare function showRewardAd(options: string | RewardOption): Promise<AdRes>;
 /**
  * 确认继续观看挽留弹窗
  */
@@ -584,7 +576,7 @@ type PermissionScope = 'scope.userLocation' | 'scope.userLocationBackground' | '
 /**
  * 权限引导弹窗配置
  */
-interface PermissionOptions {
+interface PermissionOption {
     /** 弹窗标题，默认“授权提示” */
     title?: string;
     /** 弹窗说明内容，例如“需要访问相册以保存海报” */
@@ -600,6 +592,6 @@ interface PermissionOptions {
  * @param options 引导弹窗提示配置
  * @returns 是否获得授权
  */
-declare function checkPermission(scope: PermissionScope, options?: PermissionOptions): Promise<boolean>;
+declare function checkPermission(scope: PermissionScope, options?: PermissionOption): Promise<boolean>;
 
-export { type AdRes, type DeviceInfo, type DownloadOpt, type DownloadRes, type DrawAvatarOptions, type ExportCanvasOptions, type HapticType, type HlwInstance, type HlwMsg, type InitCanvas2DResult, type NavigateOptions, type NavigateType, type PermissionOptions, type PermissionScope, type RectInfo, type RewardOptions, type ToastCallback, type ToastRes, auth, base64ToPath, buildUrl, checkAppUpdate, checkPermission, confirmRewardAd, copy, debounce, destroyRewardAd, download, downloadFile, drawAvatarWithFallback, drawCircleAvatar, drawImage, drawRoundRect, drawRoundRectImage, drawTextEllipsis, drawTextWithSpacing, error, exportCanvasToImage, fillRoundRect, formatDate, formatFileSize, formatNum, formatNumber, getAllRect, getClipboardText, getDevice, getLaunchQuery, getNumber, getRect, getTodayStr, haptic, hideLoading, hlw, initCanvas2D, initPopupAd, isPageMatch, isTimeInRange, loadCanvasImage, measureTextWithSpacing, modal, msg, navigate, navigateBack, navigateTo, navigateToMiniProgram, parseDate, parseQuery, parseScene, paste, playRewardAd, reLaunch, redirectTo, roundRectPath, safeDecode, saveImage, saveImageUrl, saveVideoFile, saveVideoUrl, setClipboardText, setPopupAd, showLoading, showPopupAd, showRewardAd, sleep, stringifyQuery, strokeRoundRect, success, switchTab, throttle, toBoolean, toNumber, toQuery, toast, withQuery };
+export { type AdRes, type DeviceInfo, type DownloadOption, type DownloadRes, type DrawAvatarOption, type ExportCanvasOption, type HapticType, type HlwInstance, type HlwMsg, type InitCanvas2DResult, type NavigateOption, type NavigateType, type PermissionOption, type PermissionScope, type RectInfo, type RewardOption, type ToastCallback, type ToastRes, auth, base64ToPath, buildUrl, checkAppUpdate, checkPermission, confirmRewardAd, copy, debounce, destroyRewardAd, download, downloadFile, drawAvatarWithFallback, drawCircleAvatar, drawImage, drawRoundRect, drawRoundRectImage, drawTextEllipsis, drawTextWithSpacing, error, exportCanvasToImage, fillRoundRect, formatDate, formatFileSize, formatNum, formatNumber, getAllRect, getDevice, getLaunchQuery, getNumber, getRect, getTodayStr, haptic, hideLoading, hlw, initCanvas2D, initPopupAd, isPageMatch, isTimeInRange, loadCanvasImage, measureTextWithSpacing, modal, msg, navigate, navigateBack, navigateTo, navigateToMiniProgram, parseDate, parseQuery, parseScene, paste, playRewardAd, reLaunch, redirectTo, safeDecode, saveImage, saveImageUrl, saveVideoFile, saveVideoUrl, setPopupAd, showLoading, showPopupAd, showRewardAd, sleep, stringifyQuery, strokeRoundRect, success, switchTab, throttle, toBoolean, toNumber, toQuery, toast, withQuery };

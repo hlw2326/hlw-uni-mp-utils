@@ -13,7 +13,7 @@ export type NavigateType =
 /**
  * 路由配置项
  */
-export interface NavigateOptions {
+export interface NavigateOption {
     /** 是否静默失败（不弹窗提示错误，默认 false） */
     silent?: boolean;
     /** 跳转失败回调函数 */
@@ -56,7 +56,7 @@ function resolveUrl(url: string, params?: Record<string, unknown>): string {
 /**
  * 统一失败提示与回调处理
  */
-function handleFail(message: string, options?: NavigateOptions): boolean {
+function handleFail(message: string, options?: NavigateOption): boolean {
     if (!options?.silent) {
         uni.showToast({ title: message, icon: "none" });
     }
@@ -75,7 +75,7 @@ function handleFail(message: string, options?: NavigateOptions): boolean {
 export function navigate(
     type: NavigateType = "navigateTo",
     url = "",
-    options: NavigateOptions = {},
+    options: NavigateOption = {},
 ): Promise<boolean> {
     // 1. 返回上一页
     if (type === "navigateBack") {
@@ -142,31 +142,31 @@ export function navigate(
 }
 
 /** 保留当前页面，跳转到应用内的某个页面 */
-export function navigateTo(url: string, options?: NavigateOptions): Promise<boolean> {
+export function navigateTo(url: string, options?: NavigateOption): Promise<boolean> {
     return navigate("navigateTo", url, options);
 }
 
 /** 关闭当前页面，跳转到应用内的某个页面 */
-export function redirectTo(url: string, options?: NavigateOptions): Promise<boolean> {
+export function redirectTo(url: string, options?: NavigateOption): Promise<boolean> {
     return navigate("redirectTo", url, options);
 }
 
 /** 跳转到 switchTab 页面，并关闭其他所有非 tabBar 页面 */
-export function switchTab(url: string, options?: NavigateOptions): Promise<boolean> {
+export function switchTab(url: string, options?: NavigateOption): Promise<boolean> {
     return navigate("switchTab", url, options);
 }
 
 /** 关闭所有页面，打开到应用内的某个页面 */
-export function reLaunch(url: string, options?: NavigateOptions): Promise<boolean> {
+export function reLaunch(url: string, options?: NavigateOption): Promise<boolean> {
     return navigate("reLaunch", url, options);
 }
 
 /** 关闭当前页面，返回上一页面或多级页面 */
-export function navigateBack(delta = 1, options: NavigateOptions = {}): Promise<boolean> {
+export function navigateBack(delta = 1, options: NavigateOption = {}): Promise<boolean> {
     return navigate("navigateBack", "", { ...options, delta });
 }
 
 /** 打开另一个小程序 */
-export function navigateToMiniProgram(appId: string, options?: NavigateOptions): Promise<boolean> {
+export function navigateToMiniProgram(appId: string, options?: NavigateOption): Promise<boolean> {
     return navigate("miniprogram", appId, options);
 }

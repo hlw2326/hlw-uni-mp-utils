@@ -60,7 +60,7 @@ export function formatDate(val: string | number | Date, format = "YYYY-MM-DD HH:
         return "";
     }
     const d = new Date(time);
-    const opt: Record<string, string> = {
+    const dict: Record<string, string> = {
         "Y+": String(d.getFullYear()),
         "M+": String(d.getMonth() + 1).padStart(2, "0"),
         "D+": String(d.getDate()).padStart(2, "0"),
@@ -70,10 +70,10 @@ export function formatDate(val: string | number | Date, format = "YYYY-MM-DD HH:
     };
 
     let result = format;
-    for (const k in opt) {
+    for (const k in dict) {
         const reg = new RegExp(`(${k})`);
         if (reg.test(result)) {
-            result = result.replace(reg, opt[k]);
+            result = result.replace(reg, dict[k]);
         }
     }
     return result;

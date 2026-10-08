@@ -13,7 +13,7 @@ export interface AdRes {
 /**
  * 激励视频参数配置
  */
-export interface RewardOptions {
+export interface RewardOption {
     /** 广告单元 ID */
     unitId: string;
     /** 广告拉起成功回调 */
@@ -68,7 +68,7 @@ async function triggerRewardAd(ad: UniApp.RewardedVideoAdContext, onShow?: () =>
 /**
  * 展示激励视频广告
  */
-export function showRewardAd(options: string | RewardOptions): Promise<AdRes> {
+export function showRewardAd(options: string | RewardOption): Promise<AdRes> {
     const unitId = typeof options === "string" ? options : options?.unitId;
     const onShow = typeof options === "object" ? options.onShow : undefined;
 

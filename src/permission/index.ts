@@ -19,7 +19,7 @@ export type PermissionScope =
 /**
  * 权限引导弹窗配置
  */
-export interface PermissionOptions {
+export interface PermissionOption {
 	/** 弹窗标题，默认“授权提示” */
 	title?: string
 	/** 弹窗说明内容，例如“需要访问相册以保存海报” */
@@ -45,7 +45,7 @@ const DEFAULT_SCOPE_NAMES: Record<string, string> = {
  * @param options 引导弹窗提示配置
  * @returns 是否获得授权
  */
-export function checkPermission(scope: PermissionScope, options: PermissionOptions = {}): Promise<boolean> {
+export function checkPermission(scope: PermissionScope, options: PermissionOption = {}): Promise<boolean> {
 	return new Promise((resolve) => {
 		// #ifndef MP-WEIXIN
 		// 非微信小程序环境默认放行

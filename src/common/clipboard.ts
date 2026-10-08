@@ -38,8 +38,3 @@ export function paste(): Promise<string> {
     });
 }
 
-/** 写入剪贴板别名 */
-export const setClipboardText = copy;
-
-/** 读取剪贴板别名 */
-export const getClipboardText = paste;

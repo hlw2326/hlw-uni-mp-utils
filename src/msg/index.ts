@@ -128,7 +128,7 @@ export function modal(opts: UniApp.ShowModalOptions = {}): Promise<boolean> {
             confirmColor = "#3b82f6",
             cancelColor = "#999999",
             showCancel = true,
-        } = opts || {};
+        } = opts;
 
         uni.showModal({
             title,
