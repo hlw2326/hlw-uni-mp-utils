@@ -157,11 +157,6 @@ export const msg: HlwMsg = {
 };
 
 /**
- * 统一提示 Hook 别名
- */
-export const useMsg = (): HlwMsg => msg;
-
-/**
  * 全局统一挂载门面对象
  */
 export const hlw = {

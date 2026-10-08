@@ -41,7 +41,6 @@ __export(index_exports, {
   error: () => error,
   exportCanvasToImage: () => exportCanvasToImage,
   fillRoundRect: () => fillRoundRect,
-  formatConvertNumber: () => formatConvertNumber,
   formatDate: () => formatDate,
   formatFileSize: () => formatFileSize,
   formatNum: () => formatNum,
@@ -96,7 +95,6 @@ __export(index_exports, {
   toNumber: () => toNumber,
   toQuery: () => toQuery,
   toast: () => toast,
-  useMsg: () => useMsg,
   withQuery: () => withQuery
 });
 module.exports = __toCommonJS(index_exports);
@@ -171,7 +169,7 @@ function toBoolean(value, defaultValue) {
 function getNumber(text) {
   return parseFloat((text || "").replace(/,/g, "")) || 0;
 }
-function formatConvertNumber(value) {
+function formatNumber(value) {
   const num = parseFloat(String(value)) || 0;
   if (num >= 1e8) {
     return (num / 1e8).toFixed(1) + "\u4EBF";
@@ -182,13 +180,12 @@ function formatConvertNumber(value) {
   return String(value);
 }
 function formatNum(val) {
-  const n = Number(val);
-  if (!n) {
+  const num = Number(val);
+  if (!num) {
     return "";
   }
-  return formatConvertNumber(n);
+  return formatNumber(num);
 }
-var formatNumber = formatConvertNumber;
 function formatFileSize(bytes, decimals = 2) {
   if (!bytes || bytes <= 0) return "0 B";
   const k = 1024;
@@ -252,8 +249,7 @@ function base64ToPath(base64) {
       const matches = /data:image\/(\w+);base64,(.*)/.exec(base64);
       const ext = matches?.[1] || "png";
       const data = matches?.[2] || base64;
-      const env = uni.env || globalThis.wx?.env || null;
-      const userDir = env?.USER_DATA_PATH || "";
+      const userDir = uni.env?.USER_DATA_PATH || "";
       const filePath = `${userDir}/tmp_${Date.now()}_${Math.random().toString(36).slice(2, 8)}.${ext}`;
       fs.writeFile({
         filePath,
@@ -1203,7 +1199,6 @@ var msg = {
   hideLoading,
   modal
 };
-var useMsg = () => msg;
 var hlw = {
   $msg: msg
 };
@@ -1384,7 +1379,6 @@ function checkPermission(scope, options = {}) {
   error,
   exportCanvasToImage,
   fillRoundRect,
-  formatConvertNumber,
   formatDate,
   formatFileSize,
   formatNum,
@@ -1439,6 +1433,5 @@ function checkPermission(scope, options = {}) {
   toNumber,
   toQuery,
   toast,
-  useMsg,
   withQuery
 });

@@ -55,8 +55,7 @@ export function base64ToPath(base64: string): Promise<string> {
             const matches = /data:image\/(\w+);base64,(.*)/.exec(base64);
             const ext = matches?.[1] || "png";
             const data = matches?.[2] || base64;
-            const env = (uni as any).env || ((globalThis as any).wx?.env) || null;
-            const userDir = env?.USER_DATA_PATH || "";
+            const userDir = (uni as unknown as { env?: { USER_DATA_PATH?: string } }).env?.USER_DATA_PATH || "";
             const filePath = `${userDir}/tmp_${Date.now()}_${Math.random().toString(36).slice(2, 8)}.${ext}`;
             fs.writeFile({
                 filePath,

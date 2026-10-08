@@ -48,14 +48,12 @@ declare function getNumber(text: string): number;
  * 格式化大数值展示（如 12345 转换为 1.2w，100000000 转换为 1.0亿）
  * @param value 数值或数值字符串
  */
-declare function formatConvertNumber(value: number | string): string;
+declare function formatNumber(value: number | string): string;
 /**
  * 格式化数值展示（无数据或 0 返回空字符串，大数格式化为 w / 亿）
  * @param val 数值或数值字符串
  */
 declare function formatNum(val: number | string): string;
-/** 格式化数值简短别名 */
-declare const formatNumber: typeof formatConvertNumber;
 /**
  * 格式化文件字节大小展示（如 1024 转换为 1 KB，1048576 转换为 1 MB）
  * @param bytes 字节数
@@ -489,10 +487,6 @@ declare function modal(opts?: UniApp.ShowModalOptions): Promise<boolean>;
  */
 declare const msg: HlwMsg;
 /**
- * 统一提示 Hook 别名
- */
-declare const useMsg: () => HlwMsg;
-/**
  * 全局统一挂载门面对象
  */
 declare const hlw: {
@@ -608,4 +602,4 @@ interface PermissionOptions {
  */
 declare function checkPermission(scope: PermissionScope, options?: PermissionOptions): Promise<boolean>;
 
-export { type AdRes, type DeviceInfo, type DownloadOpt, type DownloadRes, type DrawAvatarOptions, type ExportCanvasOptions, type HapticType, type HlwInstance, type HlwMsg, type InitCanvas2DResult, type NavigateOptions, type NavigateType, type PermissionOptions, type PermissionScope, type RectInfo, type RewardOptions, type ToastCallback, type ToastRes, auth, base64ToPath, buildUrl, checkAppUpdate, checkPermission, confirmRewardAd, copy, debounce, destroyRewardAd, download, downloadFile, drawAvatarWithFallback, drawCircleAvatar, drawImage, drawRoundRect, drawRoundRectImage, drawTextEllipsis, drawTextWithSpacing, error, exportCanvasToImage, fillRoundRect, formatConvertNumber, formatDate, formatFileSize, formatNum, formatNumber, getAllRect, getClipboardText, getDevice, getLaunchQuery, getNumber, getRect, getTodayStr, haptic, hideLoading, hlw, initCanvas2D, initPopupAd, isPageMatch, isTimeInRange, loadCanvasImage, measureTextWithSpacing, modal, msg, navigate, navigateBack, navigateTo, navigateToMiniProgram, parseDate, parseQuery, parseScene, paste, playRewardAd, reLaunch, redirectTo, roundRectPath, safeDecode, saveImage, saveImageUrl, saveVideoFile, saveVideoUrl, setClipboardText, setPopupAd, showLoading, showPopupAd, showRewardAd, sleep, stringifyQuery, strokeRoundRect, success, switchTab, throttle, toBoolean, toNumber, toQuery, toast, useMsg, withQuery };
+export { type AdRes, type DeviceInfo, type DownloadOpt, type DownloadRes, type DrawAvatarOptions, type ExportCanvasOptions, type HapticType, type HlwInstance, type HlwMsg, type InitCanvas2DResult, type NavigateOptions, type NavigateType, type PermissionOptions, type PermissionScope, type RectInfo, type RewardOptions, type ToastCallback, type ToastRes, auth, base64ToPath, buildUrl, checkAppUpdate, checkPermission, confirmRewardAd, copy, debounce, destroyRewardAd, download, downloadFile, drawAvatarWithFallback, drawCircleAvatar, drawImage, drawRoundRect, drawRoundRectImage, drawTextEllipsis, drawTextWithSpacing, error, exportCanvasToImage, fillRoundRect, formatDate, formatFileSize, formatNum, formatNumber, getAllRect, getClipboardText, getDevice, getLaunchQuery, getNumber, getRect, getTodayStr, haptic, hideLoading, hlw, initCanvas2D, initPopupAd, isPageMatch, isTimeInRange, loadCanvasImage, measureTextWithSpacing, modal, msg, navigate, navigateBack, navigateTo, navigateToMiniProgram, parseDate, parseQuery, parseScene, paste, playRewardAd, reLaunch, redirectTo, roundRectPath, safeDecode, saveImage, saveImageUrl, saveVideoFile, saveVideoUrl, setClipboardText, setPopupAd, showLoading, showPopupAd, showRewardAd, sleep, stringifyQuery, strokeRoundRect, success, switchTab, throttle, toBoolean, toNumber, toQuery, toast, withQuery };

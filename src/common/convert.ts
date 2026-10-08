@@ -38,7 +38,7 @@ export function getNumber(text: string): number {
  * 格式化大数值展示（如 12345 转换为 1.2w，100000000 转换为 1.0亿）
  * @param value 数值或数值字符串
  */
-export function formatConvertNumber(value: number | string): string {
+export function formatNumber(value: number | string): string {
     const num = parseFloat(String(value)) || 0;
     if (num >= 100000000) {
         return (num / 100000000).toFixed(1) + "亿";
@@ -54,15 +54,12 @@ export function formatConvertNumber(value: number | string): string {
  * @param val 数值或数值字符串
  */
 export function formatNum(val: number | string): string {
-    const n = Number(val);
-    if (!n) {
+    const num = Number(val);
+    if (!num) {
         return "";
     }
-    return formatConvertNumber(n);
+    return formatNumber(num);
 }
-
-/** 格式化数值简短别名 */
-export const formatNumber = formatConvertNumber;
 
 /**
  * 格式化文件字节大小展示（如 1024 转换为 1 KB，1048576 转换为 1 MB）
